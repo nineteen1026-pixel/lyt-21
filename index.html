@@ -530,6 +530,174 @@
   }
   .item-link:hover { text-decoration: underline; }
   
+  /* Sell Orders */
+  .status-negotiating { background: #fffbe6; color: #faad14; }
+  .status-confirmed { background: #e6f7ff; color: #1890ff; }
+  .status-partial_paid { background: #f9f0ff; color: #722ed1; }
+  .status-paid { background: #f6ffed; color: #52c41a; }
+  .status-completed { background: #e6fffb; color: #13c2c2; }
+  .status-cancelled { background: #f5f5f5; color: #999; }
+
+  .order-table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .order-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .order-table th {
+    background: #fafafa;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .order-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .order-table tr:last-child td { border-bottom: none; }
+  .order-table tr:hover { background: #fafafa; }
+
+  .payment-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #e0e0e0;
+  }
+  .payment-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .payment-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+  .payment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #fafafa;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .payment-item-info { display: flex; flex-direction: column; gap: 2px; }
+  .payment-item-amount { font-weight: 600; color: #52c41a; }
+  .payment-item-meta { color: #999; font-size: 12px; }
+
+  .negotiate-timeline {
+    position: relative;
+    padding-left: 24px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .negotiate-timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: #e8e8e8;
+  }
+  .negotiate-item {
+    position: relative;
+    padding-bottom: 16px;
+  }
+  .negotiate-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #faad14;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #ffd591;
+  }
+  .negotiate-item.deal::before {
+    background: #52c41a;
+    box-shadow: 0 0 0 2px #b7eb8f;
+  }
+  .negotiate-price {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .negotiate-meta {
+    font-size: 12px;
+    color: #999;
+  }
+  .negotiate-note {
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: #fafafa;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .fee-breakdown {
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+  .fee-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  .fee-row.label { color: #888; }
+  .fee-row.value { font-weight: 500; }
+  .fee-row.total {
+    border-top: 1px solid #e8e8e8;
+    margin-top: 8px;
+    padding-top: 8px;
+    font-weight: 600;
+  }
+  .fee-row.total .value { color: #52c41a; font-size: 15px; }
+
+  .progress-payment {
+    margin-top: 8px;
+  }
+  .progress-payment-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  .order-detail-section {
+    margin-bottom: 16px;
+  }
+  .order-detail-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
   @media (max-width: 768px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .item-details { grid-template-columns: repeat(2, 1fr); }
@@ -538,6 +706,8 @@
     .form-row { grid-template-columns: 1fr; }
     .listing-table { overflow-x: auto; }
     .listing-table table { min-width: 800px; }
+    .order-table { overflow-x: auto; }
+    .order-table table { min-width: 900px; }
   }
 </style>
 </head>
@@ -551,6 +721,7 @@
   <div class="tabs">
     <button class="tab" :class="{ active: activeTab === 'items' }" @click="activeTab = 'items'">📦 物品主档</button>
     <button class="tab" :class="{ active: activeTab === 'listings' }" @click="activeTab = 'listings'">🏷️ 挂单台账</button>
+    <button class="tab" :class="{ active: activeTab === 'orders' }" @click="activeTab = 'orders'">📋 出售订单</button>
   </div>
 
   <!-- Items Tab -->
@@ -640,7 +811,7 @@
             </div>
           </div>
           <div style="text-align: right;">
-            <div style="font-size: 20px; font-weight: 600;" :class="item.sellPrice ? (item.sellPrice >= item.buyPrice ? 'profit' : 'loss') : ''">
+            <div style="font-size: 20px; font-weight: 600;" :class="item.sellPrice ? (getProfit(item) >= 0 ? 'profit' : 'loss') : ''">
               {{ item.sellPrice ? getReturnRate(item) + '%' : '待出售' }}
             </div>
             <div class="progress-bar" style="width: 120px;">
@@ -661,7 +832,7 @@
           </div>
           <div class="detail-item">
             <div class="detail-label">成交价</div>
-            <div class="detail-value" :class="item.sellPrice >= item.buyPrice ? 'profit' : 'loss'">
+            <div class="detail-value" :class="getProfit(item) >= 0 ? 'profit' : 'loss'">
               {{ item.sellPrice ? '¥' + item.sellPrice.toFixed(2) : '—' }}
             </div>
           </div>
@@ -718,7 +889,7 @@
 
     <div class="empty" v-else>
       <div class="empty-icon">📦</div>
-      <div class="empty-text">暂无记录，点击「添加物品」开始记录吧</div>
+      <div class="empty-text">{{ items.length === 0 ? '暂无记录，点击「添加物品」开始记录吧' : '没有匹配的物品，试试调整筛选条件' }}</div>
     </div>
   </div>
 
@@ -726,37 +897,40 @@
   <div v-if="activeTab === 'listings'">
     <div class="stats">
       <div class="stat-card">
-        <div class="label">挂单总数</div>
-        <div class="value">{{ listings.length }}</div>
+        <div class="label">挂单总数{{ listingFiltersActive ? '（筛选）' : '' }}</div>
+        <div class="value">{{ filteredListingCount }}</div>
       </div>
       <div class="stat-card active">
         <div class="label">在挂中</div>
-        <div class="value">{{ activeListingCount }}</div>
+        <div class="value">{{ filteredActiveListingCount }}</div>
       </div>
       <div class="stat-card profit">
         <div class="label">已成交</div>
-        <div class="value">{{ soldListingCount }}</div>
+        <div class="value">{{ filteredSoldListingCount }}</div>
       </div>
       <div class="stat-card views">
         <div class="label">总浏览量</div>
-        <div class="value">{{ totalViews }}</div>
+        <div class="value">{{ filteredTotalViews }}</div>
       </div>
       <div class="stat-card rate">
         <div class="label">平均挂价</div>
-        <div class="value">¥{{ avgListedPrice }}</div>
+        <div class="value">¥{{ filteredAvgListedPrice }}</div>
       </div>
     </div>
 
     <div class="summary-section">
-      <div class="summary-title">📊 平台汇总</div>
-      <div class="summary-grid">
-        <div class="summary-item" v-for="sum in platformSummary" :key="sum.platform">
+      <div class="summary-title">📊 平台汇总{{ listingFiltersActive ? '（当前筛选）' : '' }}</div>
+      <div class="summary-grid" v-if="filteredPlatformSummary.length > 0">
+        <div class="summary-item" v-for="sum in filteredPlatformSummary" :key="sum.platform">
           <div class="summary-item-label">{{ sum.platform }}</div>
           <div class="summary-item-value highlight">{{ sum.count }} 单</div>
           <div style="font-size: 12px; color: #888; margin-top: 4px;">
             在挂 {{ sum.active }} · 成交 {{ sum.sold }} · ¥{{ sum.avgPrice }}均
           </div>
         </div>
+      </div>
+      <div v-else class="empty" style="padding: 24px 20px; box-shadow: none;">
+        <div class="empty-text">{{ listings.length === 0 ? '暂无平台汇总数据' : '当前筛选条件下无汇总数据' }}</div>
       </div>
     </div>
 
@@ -839,7 +1013,144 @@
 
     <div class="empty" v-else>
       <div class="empty-icon">🏷️</div>
-      <div class="empty-text">暂无挂单记录，点击「新增挂单」开始记录吧</div>
+      <div class="empty-text">{{ listings.length === 0 ? '暂无挂单记录，点击「新增挂单」开始记录吧' : '没有匹配的挂单，试试调整筛选条件' }}</div>
+    </div>
+  </div>
+
+  <!-- Sell Orders Tab -->
+  <div v-if="activeTab === 'orders'">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">订单总数{{ orderFiltersActive ? '（筛选）' : '' }}</div>
+        <div class="value">{{ filteredOrderCount }}</div>
+      </div>
+      <div class="stat-card active">
+        <div class="label">议价中</div>
+        <div class="value">{{ filteredNegotiatingCount }}</div>
+      </div>
+      <div class="stat-card profit">
+        <div class="label">已成交</div>
+        <div class="value">{{ filteredCompletedDealCount }}</div>
+      </div>
+      <div class="stat-card views">
+        <div class="label">待回款</div>
+        <div class="value">¥{{ filteredPendingAmount }}</div>
+      </div>
+      <div class="stat-card rate">
+        <div class="label">预计总利润</div>
+        <div class="value" :class="filteredTotalProfit >= 0 ? 'profit' : 'loss'">{{ filteredTotalProfit >= 0 ? '+' : '' }}¥{{ filteredTotalProfit }}</div>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <div class="summary-title">📊 订单汇总{{ orderFiltersActive ? '（当前筛选）' : '' }}</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-item-label">成交总额</div>
+          <div class="summary-item-value highlight">¥{{ filteredTotalDealAmount }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">已回款</div>
+          <div class="summary-item-value" style="color: #52c41a;">¥{{ filteredTotalPaidAmount }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">总费用</div>
+          <div class="summary-item-value" style="color: #ff4d4f;">¥{{ filteredTotalFees }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">平均利润率</div>
+          <div class="summary-item-value">{{ filteredAvgProfitRate }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>关联物品：</label>
+          <select v-model="orderFilterItemId">
+            <option value="">全部物品</option>
+            <option v-for="it in items" :key="it.id" :value="it.id">{{ it.name }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>平台：</label>
+          <select v-model="orderFilterPlatform">
+            <option value="">全部平台</option>
+            <option v-for="p in allPlatforms" :key="p" :value="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>订单状态：</label>
+          <select v-model="orderFilterStatus">
+            <option value="">全部状态</option>
+            <option value="negotiating">议价中</option>
+            <option value="confirmed">已确认</option>
+            <option value="partial_paid">部分回款</option>
+            <option value="paid">已结清</option>
+            <option value="completed">已完成</option>
+            <option value="cancelled">已取消</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>搜索：</label>
+          <input v-model="orderSearchKeyword" placeholder="搜索备注/买家..." style="width: 180px;">
+        </div>
+        <button class="add-btn" @click="openOrderModal()">+ 新建订单</button>
+      </div>
+    </div>
+
+    <div class="order-table" v-if="filteredOrders.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>物品</th>
+            <th>平台</th>
+            <th>成交价</th>
+            <th>费用</th>
+            <th>实际利润</th>
+            <th>回款进度</th>
+            <th>状态</th>
+            <th>成交日期</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="order in filteredOrders" :key="order.id">
+            <td>
+              <span class="item-link" @click="jumpToItem(order.itemId)">{{ getItemName(order.itemId) }}</span>
+            </td>
+            <td>{{ order.platform }}</td>
+            <td style="font-weight: 600;">¥{{ order.finalPrice ? order.finalPrice.toFixed(2) : (order.askPrice ? order.askPrice.toFixed(2) : '—') }}</td>
+            <td style="color: #ff4d4f;">¥{{ getOrderTotalFees(order).toFixed(2) }}</td>
+            <td :class="getOrderProfit(order) >= 0 ? 'profit' : 'loss'" style="font-weight: 600;">
+              {{ getOrderProfit(order) >= 0 ? '+' : '' }}¥{{ getOrderProfit(order).toFixed(2) }}
+            </td>
+            <td style="min-width: 140px;">
+              <div class="progress-payment-info">
+                <span>¥{{ order.totalPaid.toFixed(2) }}</span>
+                <span>{{ getPaymentProgress(order) }}%</span>
+              </div>
+              <div class="progress-bar" style="height: 6px;">
+                <div class="progress-fill profit" :style="{ width: getPaymentProgress(order) + '%' }"></div>
+              </div>
+            </td>
+            <td><span class="status-badge" :class="'status-' + order.status">{{ getOrderStatusText(order.status) }}</span></td>
+            <td>{{ order.dealDate ? formatDate(order.dealDate) : '—' }}</td>
+            <td>
+              <button class="btn btn-history" @click="openOrderDetailModal(order)" style="margin-right: 4px;">详情</button>
+              <button class="btn btn-edit" @click="openOrderModal(order)" style="margin-right: 4px;">编辑</button>
+              <button class="btn btn-listing" @click="openPaymentModal(order)" v-if="order.status !== 'cancelled'" style="margin-right: 4px;">回款</button>
+              <button class="btn btn-delete" @click="deleteOrder(order.id)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty" v-else>
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">{{ sellOrders.length === 0 ? '暂无出售订单，点击「新建订单」开始记录吧' : '没有匹配的订单，试试调整筛选条件' }}</div>
     </div>
   </div>
 
@@ -1014,6 +1325,364 @@
       </div>
     </div>
   </div>
+
+  <!-- Order Modal -->
+  <div class="modal-mask" :class="{ show: showOrderModal }" @click.self="closeOrderModal">
+    <div class="modal" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="modal-title">{{ editingOrder ? '编辑出售订单' : '新建出售订单' }}</div>
+        <button class="modal-close" @click="closeOrderModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>关联物品<span class="required">*</span></label>
+          <select v-model="orderForm.itemId">
+            <option value="">请选择物品</option>
+            <option v-for="it in items" :key="it.id" :value="it.id">{{ it.name }}（购入 ¥{{ it.buyPrice.toFixed(2) }}）</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>平台<span class="required">*</span></label>
+            <select v-model="orderForm.platform">
+              <option value="">请选择平台</option>
+              <option v-for="p in platformOptions" :key="p" :value="p">{{ p }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>订单状态<span class="required">*</span></label>
+            <select v-model="orderForm.status">
+              <option value="negotiating">议价中</option>
+              <option value="confirmed">已确认</option>
+              <option value="partial_paid">部分回款</option>
+              <option value="paid">已结清</option>
+              <option value="completed">已完成</option>
+              <option value="cancelled">已取消</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>初始报价 (元)<span class="required">*</span></label>
+            <input type="number" v-model.number="orderForm.askPrice" min="0" step="0.01" placeholder="挂单/初始报价">
+          </div>
+          <div class="form-group">
+            <label>成交价 (元)</label>
+            <input type="number" v-model.number="orderForm.finalPrice" min="0" step="0.01" placeholder="成交后填写">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>平台佣金 (元)</label>
+            <input type="number" v-model.number="orderForm.platformFee" min="0" step="0.01" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>运费 (元)</label>
+            <input type="number" v-model.number="orderForm.shippingFee" min="0" step="0.01" placeholder="0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>其他费用 (元)</label>
+          <input type="number" v-model.number="orderForm.otherFees" min="0" step="0.01" placeholder="包装费、服务费等">
+        </div>
+
+        <div class="fee-breakdown" v-if="orderForm.itemId && orderForm.finalPrice">
+          <div class="fee-row">
+            <span class="label">物品成本</span>
+            <span class="value">¥{{ getItemBuyPrice(orderForm.itemId).toFixed(2) }}</span>
+          </div>
+          <div class="fee-row">
+            <span class="label">成交价</span>
+            <span class="value">¥{{ orderForm.finalPrice.toFixed(2) }}</span>
+          </div>
+          <div class="fee-row">
+            <span class="label">平台佣金</span>
+            <span class="value">-¥{{ (orderForm.platformFee || 0).toFixed(2) }}</span>
+          </div>
+          <div class="fee-row">
+            <span class="label">运费</span>
+            <span class="value">-¥{{ (orderForm.shippingFee || 0).toFixed(2) }}</span>
+          </div>
+          <div class="fee-row">
+            <span class="label">其他费用</span>
+            <span class="value">-¥{{ (orderForm.otherFees || 0).toFixed(2) }}</span>
+          </div>
+          <div class="fee-row total">
+            <span>实际利润</span>
+            <span class="value" :class="calculatedOrderProfit >= 0 ? 'profit' : 'loss'">
+              {{ calculatedOrderProfit >= 0 ? '+' : '' }}¥{{ calculatedOrderProfit.toFixed(2) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>成交日期</label>
+            <input type="date" v-model="orderForm.dealDate">
+          </div>
+          <div class="form-group">
+            <label>关联挂单</label>
+            <select v-model="orderForm.listingId">
+              <option value="">无</option>
+              <option v-for="l in getItemListingsForSelect(orderForm.itemId)" :key="l.id" :value="l.id">
+                {{ l.platform }} - ¥{{ l.listedPrice.toFixed(2) }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>买家信息</label>
+          <input v-model="orderForm.buyerInfo" placeholder="买家昵称、联系方式等">
+        </div>
+
+        <div class="form-group">
+          <label>议价记录</label>
+          <div class="negotiate-timeline" v-if="orderForm.negotiateRecords && orderForm.negotiateRecords.length > 0">
+            <div class="negotiate-item" v-for="(r, idx) in orderForm.negotiateRecords.slice().reverse()" :key="idx" :class="{ deal: r.isDeal }">
+              <div class="negotiate-price">
+                ¥{{ r.price.toFixed(2) }}
+                <span v-if="r.isDeal" style="color: #52c41a; font-size: 12px; margin-left: 8px;">✓ 成交价</span>
+              </div>
+              <div class="negotiate-meta">{{ formatDateTime(r.timestamp) }} · {{ r.person || '—' }}</div>
+              <div class="negotiate-note" v-if="r.note">{{ r.note }}</div>
+            </div>
+          </div>
+          <div class="empty" v-else style="padding: 20px; box-shadow: none;">
+            <div class="empty-text" style="font-size: 13px;">暂无议价记录</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>添加议价记录</label>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom: 0;">
+              <input type="number" v-model.number="newNegotiate.price" min="0" step="0.01" placeholder="议价价格">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <input v-model="newNegotiate.person" placeholder="发起方（买家/卖家）">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom: 0;">
+              <input v-model="newNegotiate.note" placeholder="议价说明（选填）">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; display: flex; gap: 8px;">
+              <button class="btn btn-listing" @click="addNegotiateRecord" style="flex: 1;">添加议价</button>
+              <button class="btn btn-confirm" @click="addNegotiateRecord(true)" style="flex: 1;">设为成交价</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>备注</label>
+          <textarea v-model="orderForm.notes" rows="2" placeholder="选填，订单详情..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" @click="closeOrderModal">取消</button>
+        <button class="btn btn-confirm" @click="saveOrder">{{ editingOrder ? '保存' : '创建' }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal-mask" :class="{ show: showPaymentModal }" @click.self="closePaymentModal">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">💰 回款登记</div>
+        <button class="modal-close" @click="closePaymentModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div v-if="paymentOrder" style="margin-bottom: 20px; padding: 12px; background: #fafafa; border-radius: 8px;">
+          <div style="font-weight: 600; margin-bottom: 4px;">{{ getItemName(paymentOrder.itemId) }} · {{ paymentOrder.platform }}</div>
+          <div style="font-size: 13px; color: #888; margin-bottom: 8px;">
+            成交价：¥{{ (paymentOrder.finalPrice || paymentOrder.askPrice).toFixed(2) }}
+            · 已回款：¥{{ paymentOrder.totalPaid.toFixed(2) }}
+            · 待回款：¥{{ (paymentOrder.finalPrice || paymentOrder.askPrice) - paymentOrder.totalPaid > 0 ? ((paymentOrder.finalPrice || paymentOrder.askPrice) - paymentOrder.totalPaid).toFixed(2) : '0.00' }}
+          </div>
+          <div class="progress-payment-info">
+            <span>回款进度</span>
+            <span>{{ getPaymentProgress(paymentOrder) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill profit" :style="{ width: getPaymentProgress(paymentOrder) + '%' }"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>回款金额 (元)<span class="required">*</span></label>
+          <input type="number" v-model.number="paymentForm.amount" min="0" step="0.01" placeholder="输入回款金额">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>回款日期<span class="required">*</span></label>
+            <input type="date" v-model="paymentForm.date">
+          </div>
+          <div class="form-group">
+            <label>回款方式</label>
+            <select v-model="paymentForm.method">
+              <option value="">请选择</option>
+              <option value="alipay">支付宝</option>
+              <option value="wechat">微信</option>
+              <option value="bank">银行卡</option>
+              <option value="platform">平台转账</option>
+              <option value="cash">现金</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>备注</label>
+          <input v-model="paymentForm.note" placeholder="选填，回款说明...">
+        </div>
+
+        <div class="payment-section" v-if="paymentOrder && paymentOrder.paymentRecords && paymentOrder.paymentRecords.length > 0">
+          <div class="payment-section-header">
+            <span class="payment-section-title">📝 回款记录</span>
+          </div>
+          <div class="payment-list">
+            <div class="payment-item" v-for="(p, idx) in paymentOrder.paymentRecords.slice().reverse()" :key="idx">
+              <div class="payment-item-info">
+                <span class="payment-item-amount">+¥{{ p.amount.toFixed(2) }}</span>
+                <span class="payment-item-meta">{{ formatDate(p.date) }} · {{ getPaymentMethodText(p.method) }}</span>
+              </div>
+              <button class="btn btn-delete" style="padding: 4px 8px; font-size: 12px;" @click="deletePaymentRecord(p.id)">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" @click="closePaymentModal">取消</button>
+        <button class="btn btn-confirm" @click="savePayment">登记回款</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div class="modal-mask" :class="{ show: showOrderDetailModal }" @click.self="closeOrderDetailModal">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="modal-title">📋 订单详情</div>
+        <button class="modal-close" @click="closeOrderDetailModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div v-if="detailOrder">
+          <div class="order-detail-section">
+            <div class="order-detail-title">基本信息</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+              <div>
+                <span style="color: #888;">物品：</span>
+                <span class="item-link" @click="jumpToItem(detailOrder.itemId)">{{ getItemName(detailOrder.itemId) }}</span>
+              </div>
+              <div>
+                <span style="color: #888;">平台：</span>
+                <span>{{ detailOrder.platform }}</span>
+              </div>
+              <div>
+                <span style="color: #888;">状态：</span>
+                <span class="status-badge" :class="'status-' + detailOrder.status">{{ getOrderStatusText(detailOrder.status) }}</span>
+              </div>
+              <div>
+                <span style="color: #888;">成交日期：</span>
+                <span>{{ detailOrder.dealDate ? formatDate(detailOrder.dealDate) : '—' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-detail-section">
+            <div class="order-detail-title">财务明细</div>
+            <div class="fee-breakdown" style="margin-top: 0;">
+              <div class="fee-row">
+                <span class="label">物品成本</span>
+                <span class="value">¥{{ getItemBuyPrice(detailOrder.itemId).toFixed(2) }}</span>
+              </div>
+              <div class="fee-row">
+                <span class="label">初始报价</span>
+                <span class="value">¥{{ detailOrder.askPrice.toFixed(2) }}</span>
+              </div>
+              <div class="fee-row" v-if="detailOrder.finalPrice">
+                <span class="label">成交价</span>
+                <span class="value" style="font-weight: 600; color: #1890ff;">¥{{ detailOrder.finalPrice.toFixed(2) }}</span>
+              </div>
+              <div class="fee-row">
+                <span class="label">平台佣金</span>
+                <span class="value">-¥{{ (detailOrder.platformFee || 0).toFixed(2) }}</span>
+              </div>
+              <div class="fee-row">
+                <span class="label">运费</span>
+                <span class="value">-¥{{ (detailOrder.shippingFee || 0).toFixed(2) }}</span>
+              </div>
+              <div class="fee-row">
+                <span class="label">其他费用</span>
+                <span class="value">-¥{{ (detailOrder.otherFees || 0).toFixed(2) }}</span>
+              </div>
+              <div class="fee-row total">
+                <span>实际利润</span>
+                <span class="value" :class="getOrderProfit(detailOrder) >= 0 ? 'profit' : 'loss'">
+                  {{ getOrderProfit(detailOrder) >= 0 ? '+' : '' }}¥{{ getOrderProfit(detailOrder).toFixed(2) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-detail-section" v-if="detailOrder.paymentRecords && detailOrder.paymentRecords.length > 0">
+            <div class="order-detail-title">回款记录</div>
+            <div class="payment-list">
+              <div class="payment-item" v-for="(p, idx) in detailOrder.paymentRecords.slice().reverse()" :key="idx">
+                <div class="payment-item-info">
+                  <span class="payment-item-amount">+¥{{ p.amount.toFixed(2) }}</span>
+                  <span class="payment-item-meta">{{ formatDate(p.date) }} · {{ getPaymentMethodText(p.method) }}{{ p.note ? ' · ' + p.note : '' }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="progress-payment" style="margin-top: 12px;">
+              <div class="progress-payment-info">
+                <span>已回款 ¥{{ detailOrder.totalPaid.toFixed(2) }}</span>
+                <span>{{ getPaymentProgress(detailOrder) }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill profit" :style="{ width: getPaymentProgress(detailOrder) + '%' }"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-detail-section" v-if="detailOrder.negotiateRecords && detailOrder.negotiateRecords.length > 0">
+            <div class="order-detail-title">议价记录</div>
+            <div class="negotiate-timeline">
+              <div class="negotiate-item" v-for="(r, idx) in detailOrder.negotiateRecords.slice().reverse()" :key="idx" :class="{ deal: r.isDeal }">
+                <div class="negotiate-price">
+                  ¥{{ r.price.toFixed(2) }}
+                  <span v-if="r.isDeal" style="color: #52c41a; font-size: 12px; margin-left: 8px;">✓ 成交价</span>
+                </div>
+                <div class="negotiate-meta">{{ formatDateTime(r.timestamp) }} · {{ r.person || '—' }}</div>
+                <div class="negotiate-note" v-if="r.note">{{ r.note }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-detail-section" v-if="detailOrder.buyerInfo">
+            <div class="order-detail-title">买家信息</div>
+            <div style="font-size: 13px; color: #666;">{{ detailOrder.buyerInfo }}</div>
+          </div>
+
+          <div class="order-detail-section" v-if="detailOrder.notes">
+            <div class="order-detail-title">备注</div>
+            <div style="font-size: 13px; color: #666;">{{ detailOrder.notes }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-confirm" @click="closeOrderDetailModal">关闭</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1024,14 +1693,21 @@ createApp({
     const activeTab = ref('items');
     const items = ref([]);
     const listings = ref([]);
+    const sellOrders = ref([]);
     
     const showItemModal = ref(false);
     const showListingModal = ref(false);
     const showHistoryModal = ref(false);
+    const showOrderModal = ref(false);
+    const showPaymentModal = ref(false);
+    const showOrderDetailModal = ref(false);
     
     const editingItem = ref(null);
     const editingListing = ref(null);
     const historyListing = ref(null);
+    const editingOrder = ref(null);
+    const paymentOrder = ref(null);
+    const detailOrder = ref(null);
     
     const filterPlatform = ref('');
     const filterStatus = ref('');
@@ -1046,8 +1722,14 @@ createApp({
     const listingFilterMaxPrice = ref(null);
     const listingSearchKeyword = ref('');
     
+    const orderFilterItemId = ref('');
+    const orderFilterPlatform = ref('');
+    const orderFilterStatus = ref('');
+    const orderSearchKeyword = ref('');
+    
     const platformOptions = ['闲鱼', '转转', '爱回收', '拍拍', '找靓机', '孔夫子', '多抓鱼', '其他'];
     const statusOptions = ['listed', 'unlisted', 'sold', 'suspended'];
+    const orderStatusOptions = ['negotiating', 'confirmed', 'partial_paid', 'paid', 'completed', 'cancelled'];
     
     const defaultItemForm = () => ({
       name: '',
@@ -1071,9 +1753,43 @@ createApp({
       notes: '',
       statusChangeNote: ''
     });
+
+    const defaultOrderForm = () => ({
+      itemId: '',
+      listingId: '',
+      platform: '',
+      status: 'negotiating',
+      askPrice: 0,
+      finalPrice: null,
+      platformFee: 0,
+      shippingFee: 0,
+      otherFees: 0,
+      buyerInfo: '',
+      dealDate: '',
+      notes: '',
+      negotiateRecords: [],
+      paymentRecords: [],
+      totalPaid: 0
+    });
+
+    const defaultPaymentForm = () => ({
+      amount: 0,
+      date: new Date().toISOString().split('T')[0],
+      method: '',
+      note: ''
+    });
+
+    const defaultNegotiateForm = () => ({
+      price: 0,
+      person: '',
+      note: ''
+    });
     
     const itemForm = ref(defaultItemForm());
     const listingForm = ref(defaultListingForm());
+    const orderForm = ref(defaultOrderForm());
+    const paymentForm = ref(defaultPaymentForm());
+    const newNegotiate = ref(defaultNegotiateForm());
 
     const allPlatforms = computed(() => {
       const set = new Set();
@@ -1085,7 +1801,10 @@ createApp({
     });
 
     const profitCount = computed(() => {
-      return items.value.filter(item => item.sellPrice && item.sellPrice >= item.buyPrice).length;
+      return items.value.filter(item => {
+        const netSell = (item.sellPrice || 0) - (item.totalFees || 0);
+        return item.sellPrice && netSell >= item.buyPrice;
+      }).length;
     });
 
     const pendingCount = computed(() => {
@@ -1095,43 +1814,88 @@ createApp({
     const overallRate = computed(() => {
       if (items.value.length === 0) return '0.00';
       const totalCost = items.value.reduce((sum, item) => sum + item.buyPrice, 0);
-      const totalSell = items.value.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
+      const totalNetSell = items.value.reduce((sum, item) => {
+        const sell = item.sellPrice || 0;
+        const fees = item.totalFees || 0;
+        return sum + Math.max(0, sell - fees);
+      }, 0);
       if (totalCost === 0) return '0.00';
-      return ((totalSell / totalCost) * 100).toFixed(2);
+      return ((totalNetSell / totalCost) * 100).toFixed(2);
+    });
+
+    const totalProfitLoss = computed(() => {
+      return items.value.reduce((sum, item) => {
+        if (!item.sellPrice) return sum;
+        const netSell = item.sellPrice - (item.totalFees || 0);
+        return sum + (netSell - item.buyPrice);
+      }, 0);
     });
 
     const totalListings = computed(() => listings.value.length);
     const totalActiveListings = computed(() => listings.value.filter(l => l.status === 'listed').length);
 
-    const activeListingCount = computed(() => listings.value.filter(l => l.status === 'listed').length);
-    const soldListingCount = computed(() => listings.value.filter(l => l.status === 'sold').length);
-    const totalViews = computed(() => listings.value.reduce((sum, l) => sum + (l.views || 0), 0));
-    const avgListedPrice = computed(() => {
-      if (listings.value.length === 0) return '0.00';
-      const sum = listings.value.reduce((s, l) => s + l.listedPrice, 0);
-      return (sum / listings.value.length).toFixed(2);
+    const listingFiltersActive = computed(() => {
+      return !!(listingFilterItemId.value || listingFilterPlatform.value || listingFilterStatus.value ||
+        listingFilterMinPrice.value != null || listingFilterMaxPrice.value != null || listingSearchKeyword.value);
     });
 
-    const platformSummary = computed(() => {
+    const getItemName = (itemId) => {
+      const item = items.value.find(i => i.id === itemId);
+      return item ? item.name : '未知物品';
+    };
+
+    const filteredListings = computed(() => {
+      return listings.value.filter(l => {
+        if (listingFilterItemId.value && l.itemId !== listingFilterItemId.value) return false;
+        if (listingFilterPlatform.value && l.platform !== listingFilterPlatform.value) return false;
+        if (listingFilterStatus.value && l.status !== listingFilterStatus.value) return false;
+        if (listingFilterMinPrice.value != null && l.listedPrice < listingFilterMinPrice.value) return false;
+        if (listingFilterMaxPrice.value != null && l.listedPrice > listingFilterMaxPrice.value) return false;
+        if (listingSearchKeyword.value) {
+          const kw = listingSearchKeyword.value.toLowerCase();
+          const noteOk = l.notes && l.notes.toLowerCase().includes(kw);
+          const itemOk = getItemName(l.itemId).toLowerCase().includes(kw);
+          if (!noteOk && !itemOk) return false;
+        }
+        return true;
+      }).sort((a, b) => new Date(b.listedDate) - new Date(a.listedDate));
+    });
+
+    const filteredListingCount = computed(() => filteredListings.value.length);
+    const filteredActiveListingCount = computed(() => filteredListings.value.filter(l => l.status === 'listed').length);
+    const filteredSoldListingCount = computed(() => filteredListings.value.filter(l => l.status === 'sold').length);
+    const filteredTotalViews = computed(() => filteredListings.value.reduce((sum, l) => sum + (l.views || 0), 0));
+    const filteredAvgListedPrice = computed(() => {
+      if (filteredListings.value.length === 0) return '0.00';
+      const sum = filteredListings.value.reduce((s, l) => s + l.listedPrice, 0);
+      return (sum / filteredListings.value.length).toFixed(2);
+    });
+
+    const buildPlatformSummary = (source) => {
       const map = {};
-      listings.value.forEach(l => {
+      source.forEach(l => {
         if (!map[l.platform]) {
-          map[l.platform] = { platform: l.platform, count: 0, active: 0, sold: 0, totalPrice: 0 };
+          map[l.platform] = { platform: l.platform, count: 0, active: 0, sold: 0, totalPrice: 0, totalViews: 0 };
         }
         map[l.platform].count++;
         if (l.status === 'listed') map[l.platform].active++;
         if (l.status === 'sold') map[l.platform].sold++;
         map[l.platform].totalPrice += l.listedPrice;
+        map[l.platform].totalViews += l.views || 0;
       });
       return Object.values(map).map(m => ({
         ...m,
         avgPrice: m.count > 0 ? (m.totalPrice / m.count).toFixed(0) : '0'
       }));
-    });
+    };
+
+    const filteredPlatformSummary = computed(() => buildPlatformSummary(filteredListings.value));
 
     const getReturnRateNum = (item) => {
       if (!item.sellPrice) return 0;
-      return (item.sellPrice / item.buyPrice) * 100;
+      const fees = item.totalFees || 0;
+      const netSell = Math.max(0, item.sellPrice - fees);
+      return (netSell / item.buyPrice) * 100;
     };
 
     const getReturnRate = (item) => {
@@ -1140,7 +1904,8 @@ createApp({
 
     const getProfit = (item) => {
       if (!item.sellPrice) return 0;
-      return item.sellPrice - item.buyPrice;
+      const fees = item.totalFees || 0;
+      return item.sellPrice - item.buyPrice - fees;
     };
 
     const getWarrantyRemaining = (item) => {
@@ -1167,17 +1932,17 @@ createApp({
 
     const getProfitTagClass = (item) => {
       if (!item.sellPrice) return 'tag-pending';
-      return item.sellPrice >= item.buyPrice ? 'tag-profit' : 'tag-loss';
+      return getProfit(item) >= 0 ? 'tag-profit' : 'tag-loss';
     };
 
     const getProfitStatusText = (item) => {
       if (!item.sellPrice) return '待出售';
-      return item.sellPrice >= item.buyPrice ? '已回本' : '亏损中';
+      return getProfit(item) >= 0 ? '已回本' : '亏损中';
     };
 
     const getProgressClass = (item) => {
       if (!item.sellPrice) return 'pending';
-      return item.sellPrice >= item.buyPrice ? 'profit' : 'loss';
+      return getProfit(item) >= 0 ? 'profit' : 'loss';
     };
 
     const formatUsageMonths = (months) => {
@@ -1217,17 +1982,27 @@ createApp({
       return getItemListings(item).filter(l => l.status === 'listed').length;
     };
 
-    const getItemName = (itemId) => {
+    const syncItemFromListings = (itemId) => {
       const item = items.value.find(i => i.id === itemId);
-      return item ? item.name : '未知物品';
+      if (!item) return;
+
+      const itemListings = listings.value.filter(l => l.itemId === itemId);
+      item.platforms = [...new Set(itemListings.map(l => l.platform))];
+
+      const soldListings = itemListings
+        .filter(l => l.status === 'sold')
+        .sort((a, b) => new Date(b.listedDate) - new Date(a.listedDate));
+      if (soldListings.length > 0) {
+        item.sellPrice = soldListings[0].listedPrice;
+      }
     };
 
     const filteredItems = computed(() => {
       return items.value.filter(item => {
         if (filterPlatform.value && !getUniquePlatforms(item).includes(filterPlatform.value)) return false;
         
-        if (filterStatus.value === 'profit' && (!item.sellPrice || item.sellPrice < item.buyPrice)) return false;
-        if (filterStatus.value === 'loss' && (!item.sellPrice || item.sellPrice >= item.buyPrice)) return false;
+        if (filterStatus.value === 'profit' && (!item.sellPrice || getProfit(item) < 0)) return false;
+        if (filterStatus.value === 'loss' && (!item.sellPrice || getProfit(item) >= 0)) return false;
         if (filterStatus.value === 'pending' && item.sellPrice) return false;
         
         if (filterWarranty.value === 'valid' && getWarrantyRemaining(item) <= 0) return false;
@@ -1239,25 +2014,6 @@ createApp({
         if (searchKeyword.value && !item.name.toLowerCase().includes(searchKeyword.value.toLowerCase())) return false;
         
         return true;
-      });
-    });
-
-    const filteredListings = computed(() => {
-      return listings.value.filter(l => {
-        if (listingFilterItemId.value && l.itemId !== listingFilterItemId.value) return false;
-        if (listingFilterPlatform.value && l.platform !== listingFilterPlatform.value) return false;
-        if (listingFilterStatus.value && l.status !== listingFilterStatus.value) return false;
-        if (listingFilterMinPrice.value !== null && l.listedPrice < listingFilterMinPrice.value) return false;
-        if (listingFilterMaxPrice.value !== null && l.listedPrice > listingFilterMaxPrice.value) return false;
-        if (listingSearchKeyword.value) {
-          const kw = listingSearchKeyword.value.toLowerCase();
-          const noteOk = l.notes && l.notes.toLowerCase().includes(kw);
-          const itemOk = getItemName(l.itemId).toLowerCase().includes(kw);
-          if (!noteOk && !itemOk) return false;
-        }
-        return true;
-      }).sort((a, b) => {
-        return new Date(b.listedDate) - new Date(a.listedDate);
       });
     });
 
@@ -1401,6 +2157,10 @@ createApp({
             id: editingListing.value.id,
             statusHistory: history
           };
+          syncItemFromListings(payload.itemId);
+          if (old.itemId !== payload.itemId) {
+            syncItemFromListings(old.itemId);
+          }
         }
       } else {
         const newId = Date.now();
@@ -1415,11 +2175,7 @@ createApp({
           }]
         };
         listings.value.push(newListing);
-        
-        const item = items.value.find(i => i.id === payload.itemId);
-        if (item && !item.platforms.includes(payload.platform)) {
-          item.platforms.push(payload.platform);
-        }
+        syncItemFromListings(payload.itemId);
       }
       saveToLocal();
       closeListingModal();
@@ -1427,7 +2183,9 @@ createApp({
 
     const deleteListing = (id) => {
       if (confirm('确定要删除这条挂单记录吗？')) {
+        const listing = listings.value.find(l => l.id === id);
         listings.value = listings.value.filter(l => l.id !== id);
+        if (listing) syncItemFromListings(listing.itemId);
         saveToLocal();
       }
     };
@@ -1442,9 +2200,358 @@ createApp({
       historyListing.value = null;
     };
 
+    const getOrderStatusText = (status) => {
+      const map = {
+        negotiating: '议价中',
+        confirmed: '已确认',
+        partial_paid: '部分回款',
+        paid: '已结清',
+        completed: '已完成',
+        cancelled: '已取消'
+      };
+      return map[status] || status;
+    };
+
+    const getPaymentMethodText = (method) => {
+      const map = {
+        alipay: '支付宝',
+        wechat: '微信',
+        bank: '银行卡',
+        platform: '平台转账',
+        cash: '现金',
+        other: '其他'
+      };
+      return map[method] || method || '—';
+    };
+
+    const getItemBuyPrice = (itemId) => {
+      const item = items.value.find(i => i.id === itemId);
+      return item ? item.buyPrice : 0;
+    };
+
+    const getOrderTotalFees = (order) => {
+      return (order.platformFee || 0) + (order.shippingFee || 0) + (order.otherFees || 0);
+    };
+
+    const getOrderProfit = (order) => {
+      const price = order.finalPrice || order.askPrice || 0;
+      const cost = getItemBuyPrice(order.itemId);
+      const fees = getOrderTotalFees(order);
+      return price - cost - fees;
+    };
+
+    const getPaymentProgress = (order) => {
+      const total = order.finalPrice || order.askPrice || 0;
+      if (total === 0) return '0.00';
+      return ((order.totalPaid / total) * 100).toFixed(1);
+    };
+
+    const getItemListingsForSelect = (itemId) => {
+      if (!itemId) return [];
+      return listings.value.filter(l => l.itemId === itemId && l.status !== 'sold');
+    };
+
+    const calculatedOrderProfit = computed(() => {
+      if (!orderForm.value.itemId || !orderForm.value.finalPrice) return 0;
+      const cost = getItemBuyPrice(orderForm.value.itemId);
+      const fees = (orderForm.value.platformFee || 0) + (orderForm.value.shippingFee || 0) + (orderForm.value.otherFees || 0);
+      return orderForm.value.finalPrice - cost - fees;
+    });
+
+    const orderFiltersActive = computed(() => {
+      return !!(orderFilterItemId.value || orderFilterPlatform.value || orderFilterStatus.value || orderSearchKeyword.value);
+    });
+
+    const filteredOrders = computed(() => {
+      return sellOrders.value.filter(o => {
+        if (orderFilterItemId.value && o.itemId !== orderFilterItemId.value) return false;
+        if (orderFilterPlatform.value && o.platform !== orderFilterPlatform.value) return false;
+        if (orderFilterStatus.value && o.status !== orderFilterStatus.value) return false;
+        if (orderSearchKeyword.value) {
+          const kw = orderSearchKeyword.value.toLowerCase();
+          const noteOk = o.notes && o.notes.toLowerCase().includes(kw);
+          const buyerOk = o.buyerInfo && o.buyerInfo.toLowerCase().includes(kw);
+          const itemOk = getItemName(o.itemId).toLowerCase().includes(kw);
+          if (!noteOk && !buyerOk && !itemOk) return false;
+        }
+        return true;
+      }).sort((a, b) => {
+        const dateA = a.dealDate || a.createdAt;
+        const dateB = b.dealDate || b.createdAt;
+        return new Date(dateB) - new Date(dateA);
+      });
+    });
+
+    const filteredOrderCount = computed(() => filteredOrders.value.length);
+    const filteredNegotiatingCount = computed(() => filteredOrders.value.filter(o => o.status === 'negotiating').length);
+    const filteredCompletedDealCount = computed(() => filteredOrders.value.filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status)).length);
+
+    const filteredTotalDealAmount = computed(() => {
+      const sum = filteredOrders.value
+        .filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status))
+        .reduce((s, o) => s + (o.finalPrice || o.askPrice || 0), 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredTotalPaidAmount = computed(() => {
+      const sum = filteredOrders.value.reduce((s, o) => s + (o.totalPaid || 0), 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredTotalFees = computed(() => {
+      const sum = filteredOrders.value
+        .filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status))
+        .reduce((s, o) => s + getOrderTotalFees(o), 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredTotalProfit = computed(() => {
+      const sum = filteredOrders.value
+        .filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status))
+        .reduce((s, o) => s + getOrderProfit(o), 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredPendingAmount = computed(() => {
+      const sum = filteredOrders.value
+        .filter(o => ['confirmed', 'partial_paid'].includes(o.status))
+        .reduce((s, o) => {
+          const total = o.finalPrice || o.askPrice || 0;
+          return s + Math.max(0, total - (o.totalPaid || 0));
+        }, 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredAvgProfitRate = computed(() => {
+      const completedOrders = filteredOrders.value.filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status) && o.finalPrice);
+      if (completedOrders.length === 0) return '0.00';
+      const totalCost = completedOrders.reduce((s, o) => s + getItemBuyPrice(o.itemId), 0);
+      const totalProfit = completedOrders.reduce((s, o) => s + getOrderProfit(o), 0);
+      if (totalCost === 0) return '0.00';
+      return ((totalProfit / totalCost) * 100).toFixed(2);
+    });
+
+    const openOrderModal = (order = null) => {
+      if (order) {
+        editingOrder.value = order;
+        orderForm.value = {
+          ...order,
+          negotiateRecords: [...(order.negotiateRecords || [])],
+          paymentRecords: [...(order.paymentRecords || [])]
+        };
+      } else {
+        editingOrder.value = null;
+        orderForm.value = defaultOrderForm();
+      }
+      newNegotiate.value = defaultNegotiateForm();
+      showOrderModal.value = true;
+    };
+
+    const closeOrderModal = () => {
+      showOrderModal.value = false;
+      editingOrder.value = null;
+    };
+
+    const addNegotiateRecord = (isDeal = false) => {
+      if (!newNegotiate.value.price || newNegotiate.value.price <= 0) {
+        alert('请输入有效的议价价格');
+        return;
+      }
+      const record = {
+        price: newNegotiate.value.price,
+        person: newNegotiate.value.person || '',
+        note: newNegotiate.value.note || '',
+        isDeal: isDeal,
+        timestamp: new Date().toISOString()
+      };
+      if (!orderForm.value.negotiateRecords) {
+        orderForm.value.negotiateRecords = [];
+      }
+      orderForm.value.negotiateRecords.push(record);
+      if (isDeal) {
+        orderForm.value.finalPrice = newNegotiate.value.price;
+        if (!orderForm.value.dealDate) {
+          orderForm.value.dealDate = new Date().toISOString().split('T')[0];
+        }
+        if (orderForm.value.status === 'negotiating') {
+          orderForm.value.status = 'confirmed';
+        }
+      }
+      newNegotiate.value = defaultNegotiateForm();
+    };
+
+    const updateOrderStatus = (order) => {
+      const total = order.finalPrice || order.askPrice || 0;
+      if (order.status === 'cancelled') return;
+      if (!order.finalPrice) {
+        order.status = 'negotiating';
+      } else if (order.totalPaid >= total && total > 0) {
+        order.status = 'paid';
+      } else if (order.totalPaid > 0) {
+        order.status = 'partial_paid';
+      } else {
+        order.status = 'confirmed';
+      }
+    };
+
+    const syncItemFromOrders = (itemId) => {
+      const item = items.value.find(i => i.id === itemId);
+      if (!item) return;
+      const itemOrders = sellOrders.value.filter(o => o.itemId === itemId && o.status !== 'cancelled');
+      const completedOrders = itemOrders
+        .filter(o => o.finalPrice && ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status))
+        .sort((a, b) => new Date(b.dealDate || b.createdAt) - new Date(a.dealDate || a.createdAt));
+      if (completedOrders.length > 0) {
+        const totalSellPrice = completedOrders.reduce((sum, o) => sum + (o.finalPrice || 0), 0);
+        const totalFees = completedOrders.reduce((sum, o) => sum + getOrderTotalFees(o), 0);
+        item.sellPrice = totalSellPrice;
+        item.totalFees = totalFees;
+      } else {
+        item.sellPrice = null;
+        item.totalFees = 0;
+      }
+    };
+
+    const saveOrder = () => {
+      if (!orderForm.value.itemId) {
+        alert('请选择关联物品');
+        return;
+      }
+      if (!orderForm.value.platform) {
+        alert('请选择平台');
+        return;
+      }
+      if (!orderForm.value.askPrice || orderForm.value.askPrice <= 0) {
+        alert('请输入有效的初始报价');
+        return;
+      }
+
+      const payload = {
+        ...orderForm.value,
+        finalPrice: orderForm.value.finalPrice > 0 ? orderForm.value.finalPrice : null,
+        platformFee: orderForm.value.platformFee || 0,
+        shippingFee: orderForm.value.shippingFee || 0,
+        otherFees: orderForm.value.otherFees || 0,
+        negotiateRecords: [...(orderForm.value.negotiateRecords || [])],
+        paymentRecords: [...(orderForm.value.paymentRecords || [])]
+      };
+
+      if (editingOrder.value) {
+        const index = sellOrders.value.findIndex(o => o.id === editingOrder.value.id);
+        if (index !== -1) {
+          updateOrderStatus(payload);
+          sellOrders.value[index] = { ...payload, id: editingOrder.value.id };
+          syncItemFromOrders(payload.itemId);
+        }
+      } else {
+        const newId = Date.now();
+        const newOrder = {
+          ...payload,
+          id: newId,
+          createdAt: new Date().toISOString(),
+          totalPaid: 0
+        };
+        updateOrderStatus(newOrder);
+        sellOrders.value.push(newOrder);
+        syncItemFromOrders(payload.itemId);
+      }
+      updateOverallStatsWithOrders();
+      saveToLocal();
+      closeOrderModal();
+    };
+
+    const deleteOrder = (id) => {
+      if (confirm('确定要删除这条订单记录吗？')) {
+        const order = sellOrders.value.find(o => o.id === id);
+        sellOrders.value = sellOrders.value.filter(o => o.id !== id);
+        if (order) syncItemFromOrders(order.itemId);
+        updateOverallStatsWithOrders();
+        saveToLocal();
+      }
+    };
+
+    const openPaymentModal = (order) => {
+      paymentOrder.value = order;
+      paymentForm.value = defaultPaymentForm();
+      showPaymentModal.value = true;
+    };
+
+    const closePaymentModal = () => {
+      showPaymentModal.value = false;
+      paymentOrder.value = null;
+    };
+
+    const savePayment = () => {
+      if (!paymentOrder.value) return;
+      if (!paymentForm.value.amount || paymentForm.value.amount <= 0) {
+        alert('请输入有效的回款金额');
+        return;
+      }
+      if (!paymentForm.value.date) {
+        alert('请选择回款日期');
+        return;
+      }
+
+      const record = {
+        id: Date.now(),
+        amount: paymentForm.value.amount,
+        date: paymentForm.value.date,
+        method: paymentForm.value.method,
+        note: paymentForm.value.note
+      };
+
+      const orderIndex = sellOrders.value.findIndex(o => o.id === paymentOrder.value.id);
+      if (orderIndex !== -1) {
+        const order = sellOrders.value[orderIndex];
+        if (!order.paymentRecords) order.paymentRecords = [];
+        order.paymentRecords.push(record);
+        order.totalPaid = (order.totalPaid || 0) + paymentForm.value.amount;
+        updateOrderStatus(order);
+        syncItemFromOrders(order.itemId);
+        paymentOrder.value = { ...order };
+      }
+      updateOverallStatsWithOrders();
+      saveToLocal();
+      closePaymentModal();
+    };
+
+    const deletePaymentRecord = (recordId) => {
+      if (!paymentOrder.value) return;
+      if (confirm('确定要删除这条回款记录吗？')) {
+        const orderIndex = sellOrders.value.findIndex(o => o.id === paymentOrder.value.id);
+        if (orderIndex !== -1) {
+          const order = sellOrders.value[orderIndex];
+          const record = order.paymentRecords.find(r => r.id === recordId);
+          if (record) {
+            order.totalPaid = Math.max(0, (order.totalPaid || 0) - record.amount);
+            order.paymentRecords = order.paymentRecords.filter(r => r.id !== recordId);
+            updateOrderStatus(order);
+            syncItemFromOrders(order.itemId);
+            paymentOrder.value = { ...order };
+          }
+        }
+        updateOverallStatsWithOrders();
+        saveToLocal();
+      }
+    };
+
+    const openOrderDetailModal = (order) => {
+      detailOrder.value = order;
+      showOrderDetailModal.value = true;
+    };
+
+    const closeOrderDetailModal = () => {
+      showOrderDetailModal.value = false;
+      detailOrder.value = null;
+    };
+
+    const updateOverallStatsWithOrders = () => {
+    };
+
     const saveToLocal = () => {
       localStorage.setItem('secondhand-ledger-items', JSON.stringify(items.value));
       localStorage.setItem('secondhand-ledger-listings', JSON.stringify(listings.value));
+      localStorage.setItem('secondhand-ledger-orders', JSON.stringify(sellOrders.value));
     };
 
     const loadFromLocal = () => {
@@ -1464,6 +2571,14 @@ createApp({
           console.error('Failed to load listings:', e);
         }
       }
+      const ordersData = localStorage.getItem('secondhand-ledger-orders');
+      if (ordersData) {
+        try {
+          sellOrders.value = JSON.parse(ordersData);
+        } catch (e) {
+          console.error('Failed to load orders:', e);
+        }
+      }
     };
 
     onMounted(() => {
@@ -1474,14 +2589,24 @@ createApp({
       activeTab,
       items,
       listings,
+      sellOrders,
       showItemModal,
       showListingModal,
       showHistoryModal,
+      showOrderModal,
+      showPaymentModal,
+      showOrderDetailModal,
       editingItem,
       editingListing,
       historyListing,
+      editingOrder,
+      paymentOrder,
+      detailOrder,
       itemForm,
       listingForm,
+      orderForm,
+      paymentForm,
+      newNegotiate,
       platformOptions,
       allPlatforms,
       filterPlatform,
@@ -1495,18 +2620,37 @@ createApp({
       listingFilterMinPrice,
       listingFilterMaxPrice,
       listingSearchKeyword,
+      orderFilterItemId,
+      orderFilterPlatform,
+      orderFilterStatus,
+      orderSearchKeyword,
       profitCount,
       pendingCount,
       overallRate,
+      totalProfitLoss,
       totalListings,
       totalActiveListings,
-      activeListingCount,
-      soldListingCount,
-      totalViews,
-      avgListedPrice,
-      platformSummary,
+      listingFiltersActive,
+      filteredListingCount,
+      filteredActiveListingCount,
+      filteredSoldListingCount,
+      filteredTotalViews,
+      filteredAvgListedPrice,
+      filteredPlatformSummary,
       filteredItems,
       filteredListings,
+      orderFiltersActive,
+      filteredOrders,
+      filteredOrderCount,
+      filteredNegotiatingCount,
+      filteredCompletedDealCount,
+      filteredTotalDealAmount,
+      filteredTotalPaidAmount,
+      filteredTotalFees,
+      filteredTotalProfit,
+      filteredPendingAmount,
+      filteredAvgProfitRate,
+      calculatedOrderProfit,
       getReturnRate,
       getReturnRateNum,
       getProfit,
@@ -1525,6 +2669,13 @@ createApp({
       getUniquePlatforms,
       getActiveListingCount,
       getItemName,
+      getOrderStatusText,
+      getPaymentMethodText,
+      getItemBuyPrice,
+      getOrderTotalFees,
+      getOrderProfit,
+      getPaymentProgress,
+      getItemListingsForSelect,
       jumpToListings,
       jumpToItem,
       openItemModal,
@@ -1536,7 +2687,18 @@ createApp({
       saveListing,
       deleteListing,
       openHistoryModal,
-      closeHistoryModal
+      closeHistoryModal,
+      openOrderModal,
+      closeOrderModal,
+      saveOrder,
+      deleteOrder,
+      openPaymentModal,
+      closePaymentModal,
+      savePayment,
+      deletePaymentRecord,
+      openOrderDetailModal,
+      closeOrderDetailModal,
+      addNegotiateRecord
     };
   }
 }).mount('#app');
