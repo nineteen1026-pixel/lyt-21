@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二手物品流转账本</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    padding: 20px;
+  }
+  #app { max-width: 1200px; margin: 0 auto; }
+  
+  .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header p { opacity: 0.9; font-size: 14px; }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .stat-card .label { font-size: 13px; color: #888; margin-bottom: 8px; }
+  .stat-card .value { font-size: 24px; font-weight: 600; color: #333; }
+  .stat-card.profit .value { color: #52c41a; }
+  .stat-card.loss .value { color: #ff4d4f; }
+  .stat-card.rate .value { color: #1890ff; }
+  
+  .filters {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .filter-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-group label { font-size: 14px; color: #666; white-space: nowrap; }
+  .filter-group select, .filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .filter-group select:focus, .filter-group input:focus {
+    border-color: #667eea;
+  }
+  .filter-group select { min-width: 120px; }
+  
+  .add-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: auto;
+    transition: transform 0.1s;
+  }
+  .add-btn:hover { transform: translateY(-1px); }
+  
+  .item-list {
+    display: grid;
+    gap: 16px;
+  }
+  .item-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+  }
+  .item-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .item-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+  .item-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .tag {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .tag-platform { background: #e6f7ff; color: #1890ff; }
+  .tag-warranty { background: #f6ffed; color: #52c41a; }
+  .tag-warranty-expired { background: #fff1f0; color: #ff4d4f; }
+  .tag-profit { background: #f6ffed; color: #52c41a; }
+  .tag-loss { background: #fff1f0; color: #ff4d4f; }
+  .tag-pending { background: #fffbe6; color: #faad14; }
+  
+  .item-details {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 16px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .detail-item { text-align: center; }
+  .detail-label { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .detail-value { font-size: 16px; font-weight: 600; color: #333; }
+  .detail-value.profit { color: #52c41a; }
+  .detail-value.loss { color: #ff4d4f; }
+  
+  .item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item-desc { font-size: 13px; color: #888; }
+  .item-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-edit { background: #e6f7ff; color: #1890ff; }
+  .btn-edit:hover { background: #bae7ff; }
+  .btn-delete { background: #fff1f0; color: #ff4d4f; }
+  .btn-delete:hover { background: #ffccc7; }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+  .progress-fill.profit { background: linear-gradient(90deg, #52c41a, #73d13d); }
+  .progress-fill.loss { background: linear-gradient(90deg, #ff4d4f, #ff7875); }
+  .progress-fill.pending { background: linear-gradient(90deg, #faad14, #ffc53d); }
+  
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+  
+  /* Modal */
+  .modal-mask {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+  }
+  .modal-mask.show { opacity: 1; visibility: visible; }
+  .modal {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.2s;
+  }
+  .modal-mask.show .modal { transform: translateY(0); }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-title { font-size: 18px; font-weight: 600; }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+    padding: 4px;
+  }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  .btn-cancel { background: #f5f5f5; color: #666; }
+  .btn-cancel:hover { background: #e8e8e8; }
+  .btn-confirm {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+  }
+  .form-group label .required { color: #ff4d4f; margin-left: 2px; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #667eea;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .platform-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 4px;
+  }
+  .platform-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .platform-checkbox:hover { border-color: #667eea; }
+  .platform-checkbox input { margin: 0; cursor: pointer; }
+  .platform-checkbox.checked {
+    background: #f0f5ff;
+    border-color: #667eea;
+    color: #667eea;
+  }
+  
+  @media (max-width: 768px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .item-details { grid-template-columns: repeat(2, 1fr); }
+    .filter-row { flex-direction: column; align-items: stretch; }
+    .add-btn { margin-left: 0; width: 100%; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <h1>💰 二手物品流转账本</h1>
+    <p>记录闲置物品流转，追踪回本情况，让每一笔交易都清清楚楚</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="label">物品总数</div>
+      <div class="value">{{ items.length }}</div>
+    </div>
+    <div class="stat-card profit">
+      <div class="label">已回本</div>
+      <div class="value">{{ profitCount }} 件</div>
+    </div>
+    <div class="stat-card loss">
+      <div class="label">待出售</div>
+      <div class="value">{{ pendingCount }} 件</div>
+    </div>
+    <div class="stat-card rate">
+      <div class="label">总体回本率</div>
+      <div class="value">{{ overallRate }}%</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>平台：</label>
+        <select v-model="filterPlatform">
+          <option value="">全部平台</option>
+          <option v-for="p in allPlatforms" :key="p" :value="p">{{ p }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>回本状态：</label>
+        <select v-model="filterStatus">
+          <option value="">全部</option>
+          <option value="profit">已回本</option>
+          <option value="loss">亏损中</option>
+          <option value="pending">待出售</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>保修状态：</label>
+        <select v-model="filterWarranty">
+          <option value="">全部</option>
+          <option value="valid">还在保</option>
+          <option value="expired">已过保</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>搜索：</label>
+        <input v-model="searchKeyword" placeholder="搜索物品名称..." style="width: 180px;">
+      </div>
+      <button class="add-btn" @click="openModal()">+ 添加物品</button>
+    </div>
+  </div>
+
+  <div class="item-list" v-if="filteredItems.length > 0">
+    <div class="item-card" v-for="item in filteredItems" :key="item.id">
+      <div class="item-header">
+        <div>
+          <div class="item-name">{{ item.name }}</div>
+          <div class="item-tags">
+            <span class="tag tag-platform" v-for="p in item.platforms" :key="p">{{ p }}</span>
+            <span class="tag" :class="getWarrantyTagClass(item)" v-if="item.warrantyMonths > 0">
+              {{ getWarrantyStatus(item) }}
+            </span>
+            <span class="tag" :class="getProfitTagClass(item)">
+              {{ getProfitStatusText(item) }}
+            </span>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 20px; font-weight: 600;" :class="item.sellPrice ? (item.sellPrice >= item.buyPrice ? 'profit' : 'loss') : ''">
+            {{ item.sellPrice ? getReturnRate(item) + '%' : '待出售' }}
+          </div>
+          <div class="progress-bar" style="width: 120px;">
+            <div class="progress-fill" :class="getProgressClass(item)"
+                 :style="{ width: Math.min(getReturnRateNum(item), 100) + '%' }"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="item-details">
+        <div class="detail-item">
+          <div class="detail-label">购买价</div>
+          <div class="detail-value">¥{{ item.buyPrice.toFixed(2) }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">使用时长</div>
+          <div class="detail-value">{{ formatUsageMonths(item.usageMonths) }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">成交价</div>
+          <div class="detail-value" :class="item.sellPrice >= item.buyPrice ? 'profit' : 'loss'">
+            {{ item.sellPrice ? '¥' + item.sellPrice.toFixed(2) : '—' }}
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">盈亏</div>
+          <div class="detail-value" :class="getProfit(item) >= 0 ? 'profit' : 'loss'">
+            {{ item.sellPrice ? (getProfit(item) >= 0 ? '+' : '') + '¥' + getProfit(item).toFixed(2) : '—' }}
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">保修剩余</div>
+          <div class="detail-value" :class="getWarrantyRemaining(item) > 0 ? 'profit' : 'loss'">
+            {{ item.warrantyMonths > 0 ? getWarrantyRemainingText(item) : '无保修' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="item-footer">
+        <div class="item-desc" v-if="item.description">{{ item.description }}</div>
+        <div class="item-actions">
+          <button class="btn btn-edit" @click="openModal(item)">编辑</button>
+          <button class="btn btn-delete" @click="deleteItem(item.id)">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty" v-else>
+    <div class="empty-icon">📦</div>
+    <div class="empty-text">暂无记录，点击「添加物品」开始记录吧</div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-mask" :class="{ show: showModal }" @click.self="closeModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">{{ editingItem ? '编辑物品' : '添加物品' }}</div>
+        <button class="modal-close" @click="closeModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>物品名称<span class="required">*</span></label>
+          <input v-model="form.name" placeholder="例如：iPhone 13">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>购买价格 (元)<span class="required">*</span></label>
+            <input type="number" v-model.number="form.buyPrice" min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>使用时长 (月)<span class="required">*</span></label>
+            <input type="number" v-model.number="form.usageMonths" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>挂过的平台</label>
+          <div class="platform-checkboxes">
+            <label class="platform-checkbox" :class="{ checked: form.platforms.includes(p) }"
+                   v-for="p in platformOptions" :key="p">
+              <input type="checkbox" :value="p" v-model="form.platforms">
+              {{ p }}
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>成交价格 (元)</label>
+            <input type="number" v-model.number="form.sellPrice" min="0" step="0.01" placeholder="未出售留空">
+          </div>
+          <div class="form-group">
+            <label>保修期 (月)</label>
+            <input type="number" v-model.number="form.warrantyMonths" min="0" step="1" placeholder="0为无保修">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>购买日期</label>
+          <input type="date" v-model="form.buyDate">
+        </div>
+
+        <div class="form-group">
+          <label>备注</label>
+          <textarea v-model="form.description" rows="3" placeholder="选填，记录物品详情..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" @click="closeModal">取消</button>
+        <button class="btn btn-confirm" @click="saveItem">{{ editingItem ? '保存' : '添加' }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, computed, onMounted, watch } = Vue;
+
+createApp({
+  setup() {
+    const items = ref([]);
+    const showModal = ref(false);
+    const editingItem = ref(null);
+    const filterPlatform = ref('');
+    const filterStatus = ref('');
+    const filterWarranty = ref('');
+    const searchKeyword = ref('');
+    
+    const platformOptions = ['闲鱼', '转转', '爱回收', '拍拍', '找靓机', '孔夫子', '多抓鱼', '其他'];
+    
+    const defaultForm = () => ({
+      name: '',
+      buyPrice: 0,
+      usageMonths: 0,
+      platforms: [],
+      sellPrice: null,
+      warrantyMonths: 0,
+      buyDate: '',
+      description: ''
+    });
+    
+    const form = ref(defaultForm());
+
+    const allPlatforms = computed(() => {
+      const set = new Set();
+      items.value.forEach(item => {
+        item.platforms.forEach(p => set.add(p));
+      });
+      return Array.from(set);
+    });
+
+    const profitCount = computed(() => {
+      return items.value.filter(item => item.sellPrice && item.sellPrice >= item.buyPrice).length;
+    });
+
+    const pendingCount = computed(() => {
+      return items.value.filter(item => !item.sellPrice).length;
+    });
+
+    const overallRate = computed(() => {
+      if (items.value.length === 0) return '0.00';
+      const totalCost = items.value.reduce((sum, item) => sum + item.buyPrice, 0);
+      const totalSell = items.value.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
+      if (totalCost === 0) return '0.00';
+      return ((totalSell / totalCost) * 100).toFixed(2);
+    });
+
+    const getReturnRateNum = (item) => {
+      if (!item.sellPrice) return 0;
+      return (item.sellPrice / item.buyPrice) * 100;
+    };
+
+    const getReturnRate = (item) => {
+      return getReturnRateNum(item).toFixed(1);
+    };
+
+    const getProfit = (item) => {
+      if (!item.sellPrice) return 0;
+      return item.sellPrice - item.buyPrice;
+    };
+
+    const getWarrantyRemaining = (item) => {
+      if (item.warrantyMonths <= 0) return -1;
+      const usedMonths = item.usageMonths || 0;
+      return item.warrantyMonths - usedMonths;
+    };
+
+    const getWarrantyRemainingText = (item) => {
+      const remaining = getWarrantyRemaining(item);
+      if (remaining <= 0) return '已过保';
+      return remaining + ' 个月';
+    };
+
+    const getWarrantyStatus = (item) => {
+      const remaining = getWarrantyRemaining(item);
+      if (remaining > 0) return '还在保';
+      return '已过保';
+    };
+
+    const getWarrantyTagClass = (item) => {
+      return getWarrantyRemaining(item) > 0 ? 'tag-warranty' : 'tag-warranty-expired';
+    };
+
+    const getProfitTagClass = (item) => {
+      if (!item.sellPrice) return 'tag-pending';
+      return item.sellPrice >= item.buyPrice ? 'tag-profit' : 'tag-loss';
+    };
+
+    const getProfitStatusText = (item) => {
+      if (!item.sellPrice) return '待出售';
+      return item.sellPrice >= item.buyPrice ? '已回本' : '亏损中';
+    };
+
+    const getProgressClass = (item) => {
+      if (!item.sellPrice) return 'pending';
+      return item.sellPrice >= item.buyPrice ? 'profit' : 'loss';
+    };
+
+    const formatUsageMonths = (months) => {
+      if (months < 12) return months + ' 个月';
+      const years = Math.floor(months / 12);
+      const m = months % 12;
+      return m > 0 ? years + ' 年 ' + m + ' 个月' : years + ' 年';
+    };
+
+    const filteredItems = computed(() => {
+      return items.value.filter(item => {
+        if (filterPlatform.value && !item.platforms.includes(filterPlatform.value)) return false;
+        
+        if (filterStatus.value === 'profit' && (!item.sellPrice || item.sellPrice < item.buyPrice)) return false;
+        if (filterStatus.value === 'loss' && (!item.sellPrice || item.sellPrice >= item.buyPrice)) return false;
+        if (filterStatus.value === 'pending' && item.sellPrice) return false;
+        
+        if (filterWarranty.value === 'valid' && getWarrantyRemaining(item) <= 0) return false;
+        if (filterWarranty.value === 'expired' && getWarrantyRemaining(item) > 0) return false;
+        
+        if (searchKeyword.value && !item.name.toLowerCase().includes(searchKeyword.value.toLowerCase())) return false;
+        
+        return true;
+      });
+    });
+
+    const openModal = (item = null) => {
+      if (item) {
+        editingItem.value = item;
+        form.value = { ...item, platforms: [...item.platforms] };
+      } else {
+        editingItem.value = null;
+        form.value = defaultForm();
+      }
+      showModal.value = true;
+    };
+
+    const closeModal = () => {
+      showModal.value = false;
+      editingItem.value = null;
+    };
+
+    const saveItem = () => {
+      if (!form.value.name || !form.value.name.trim()) {
+        alert('请输入物品名称');
+        return;
+      }
+      if (!form.value.buyPrice || form.value.buyPrice <= 0) {
+        alert('请输入有效的购买价格');
+        return;
+      }
+      if (form.value.usageMonths === null || form.value.usageMonths < 0) {
+        alert('请输入有效的使用时长');
+        return;
+      }
+
+      const payload = {
+        ...form.value,
+        platforms: [...form.value.platforms],
+        sellPrice: form.value.sellPrice > 0 ? form.value.sellPrice : null
+      };
+
+      if (editingItem.value) {
+        const index = items.value.findIndex(i => i.id === editingItem.value.id);
+        if (index !== -1) {
+          items.value[index] = { ...payload, id: editingItem.value.id };
+        }
+      } else {
+        items.value.push({ ...payload, id: Date.now() });
+      }
+      saveToLocal();
+      closeModal();
+    };
+
+    const deleteItem = (id) => {
+      if (confirm('确定要删除这条记录吗？')) {
+        items.value = items.value.filter(i => i.id !== id);
+        saveToLocal();
+      }
+    };
+
+    const saveToLocal = () => {
+      localStorage.setItem('secondhand-ledger-items', JSON.stringify(items.value));
+    };
+
+    const loadFromLocal = () => {
+      const data = localStorage.getItem('secondhand-ledger-items');
+      if (data) {
+        try {
+          items.value = JSON.parse(data);
+        } catch (e) {
+          console.error('Failed to load data:', e);
+        }
+      }
+    };
+
+    onMounted(() => {
+      loadFromLocal();
+    });
+
+    return {
+      items,
+      showModal,
+      editingItem,
+      form,
+      platformOptions,
+      allPlatforms,
+      filterPlatform,
+      filterStatus,
+      filterWarranty,
+      searchKeyword,
+      profitCount,
+      pendingCount,
+      overallRate,
+      filteredItems,
+      getReturnRate,
+      getReturnRateNum,
+      getProfit,
+      getWarrantyRemaining,
+      getWarrantyRemainingText,
+      getWarrantyStatus,
+      getWarrantyTagClass,
+      getProfitTagClass,
+      getProfitStatusText,
+      getProgressClass,
+      formatUsageMonths,
+      openModal,
+      closeModal,
+      saveItem,
+      deleteItem
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
