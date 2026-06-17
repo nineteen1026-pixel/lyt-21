@@ -13,7 +13,7 @@
     color: #333;
     padding: 20px;
   }
-  #app { max-width: 1200px; margin: 0 auto; }
+  #app { max-width: 1400px; margin: 0 auto; }
   
   .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -25,9 +25,36 @@
   .header h1 { font-size: 28px; margin-bottom: 8px; }
   .header p { opacity: 0.9; font-size: 14px; }
   
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: white;
+    padding: 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tab {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: #667eea; }
+  .tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
   .stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 20px;
   }
@@ -39,9 +66,12 @@
   }
   .stat-card .label { font-size: 13px; color: #888; margin-bottom: 8px; }
   .stat-card .value { font-size: 24px; font-weight: 600; color: #333; }
+  .stat-card .sub { font-size: 12px; color: #999; margin-top: 4px; }
   .stat-card.profit .value { color: #52c41a; }
   .stat-card.loss .value { color: #ff4d4f; }
   .stat-card.rate .value { color: #1890ff; }
+  .stat-card.active .value { color: #722ed1; }
+  .stat-card.views .value { color: #fa8c16; }
   
   .filters {
     background: white;
@@ -126,6 +156,7 @@
   .tag-profit { background: #f6ffed; color: #52c41a; }
   .tag-loss { background: #fff1f0; color: #ff4d4f; }
   .tag-pending { background: #fffbe6; color: #faad14; }
+  .tag-listing-count { background: #f9f0ff; color: #722ed1; }
   
   .item-details {
     display: grid;
@@ -141,6 +172,15 @@
   .detail-value { font-size: 16px; font-weight: 600; color: #333; }
   .detail-value.profit { color: #52c41a; }
   .detail-value.loss { color: #ff4d4f; }
+  .detail-value.active { color: #722ed1; }
+  .detail-link {
+    color: #667eea;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .detail-link:hover { color: #764ba2; }
   
   .item-footer {
     display: flex;
@@ -161,6 +201,12 @@
   .btn-edit:hover { background: #bae7ff; }
   .btn-delete { background: #fff1f0; color: #ff4d4f; }
   .btn-delete:hover { background: #ffccc7; }
+  .btn-listing { background: #f9f0ff; color: #722ed1; }
+  .btn-listing:hover { background: #efdbff; }
+  .btn-history { background: #fffbe6; color: #fa8c16; }
+  .btn-history:hover { background: #fff1b8; }
+  .btn-view { background: #e6fffb; color: #13c2c2; }
+  .btn-view:hover { background: #87e8de; }
   
   .progress-bar {
     width: 100%;
@@ -190,6 +236,130 @@
   .empty-icon { font-size: 48px; margin-bottom: 12px; }
   .empty-text { font-size: 15px; }
   
+  .listing-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #e0e0e0;
+  }
+  .listing-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .listing-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+  .listing-mini-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .listing-mini-card {
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+  }
+  .listing-mini-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .listing-mini-platform {
+    font-weight: 600;
+    color: #1890ff;
+  }
+  .listing-mini-price {
+    font-weight: 600;
+    color: #333;
+  }
+  .listing-mini-meta {
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 12px;
+  }
+  
+  .summary-section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .summary-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .summary-item {
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 8px;
+  }
+  .summary-item-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .summary-item-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+  .summary-item-value.highlight { color: #667eea; }
+  
+  /* Listing Table */
+  .listing-table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .listing-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .listing-table th {
+    background: #fafafa;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .listing-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .listing-table tr:last-child td { border-bottom: none; }
+  .listing-table tr:hover { background: #fafafa; }
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .status-listed { background: #f6ffed; color: #52c41a; }
+  .status-unlisted { background: #f5f5f5; color: #999; }
+  .status-sold { background: #e6f7ff; color: #1890ff; }
+  .status-suspended { background: #fff1f0; color: #ff4d4f; }
+  
   /* Modal */
   .modal-mask {
     position: fixed;
@@ -208,7 +378,7 @@
     background: white;
     border-radius: 12px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
     transform: translateY(20px);
@@ -302,12 +472,72 @@
     color: #667eea;
   }
   
+  .status-history {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .history-timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+  .history-timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: #e8e8e8;
+  }
+  .history-item {
+    position: relative;
+    padding-bottom: 16px;
+  }
+  .history-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #d9d9d9;
+  }
+  .history-status {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .history-meta {
+    font-size: 12px;
+    color: #999;
+  }
+  .history-note {
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: #fafafa;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #666;
+  }
+  
+  .item-link {
+    color: #667eea;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .item-link:hover { text-decoration: underline; }
+  
   @media (max-width: 768px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .item-details { grid-template-columns: repeat(2, 1fr); }
     .filter-row { flex-direction: column; align-items: stretch; }
     .add-btn { margin-left: 0; width: 100%; }
     .form-row { grid-template-columns: 1fr; }
+    .listing-table { overflow-x: auto; }
+    .listing-table table { min-width: 800px; }
   }
 </style>
 </head>
@@ -315,162 +545,334 @@
 <div id="app">
   <div class="header">
     <h1>💰 二手物品流转账本</h1>
-    <p>记录闲置物品流转，追踪回本情况，让每一笔交易都清清楚楚</p>
+    <p>记录闲置物品流转，追踪多平台挂单，让每一笔交易都清清楚楚</p>
   </div>
 
-  <div class="stats">
-    <div class="stat-card">
-      <div class="label">物品总数</div>
-      <div class="value">{{ items.length }}</div>
+  <div class="tabs">
+    <button class="tab" :class="{ active: activeTab === 'items' }" @click="activeTab = 'items'">📦 物品主档</button>
+    <button class="tab" :class="{ active: activeTab === 'listings' }" @click="activeTab = 'listings'">🏷️ 挂单台账</button>
+  </div>
+
+  <!-- Items Tab -->
+  <div v-if="activeTab === 'items'">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">物品总数</div>
+        <div class="value">{{ items.length }}</div>
+      </div>
+      <div class="stat-card profit">
+        <div class="label">已回本</div>
+        <div class="value">{{ profitCount }} 件</div>
+      </div>
+      <div class="stat-card loss">
+        <div class="label">待出售</div>
+        <div class="value">{{ pendingCount }} 件</div>
+      </div>
+      <div class="stat-card rate">
+        <div class="label">总体回本率</div>
+        <div class="value">{{ overallRate }}%</div>
+      </div>
+      <div class="stat-card active">
+        <div class="label">在挂数量</div>
+        <div class="value">{{ totalActiveListings }}</div>
+        <div class="sub">共 {{ totalListings }} 条挂单记录</div>
+      </div>
     </div>
-    <div class="stat-card profit">
-      <div class="label">已回本</div>
-      <div class="value">{{ profitCount }} 件</div>
+
+    <div class="filters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>平台：</label>
+          <select v-model="filterPlatform">
+            <option value="">全部平台</option>
+            <option v-for="p in allPlatforms" :key="p" :value="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>回本状态：</label>
+          <select v-model="filterStatus">
+            <option value="">全部</option>
+            <option value="profit">已回本</option>
+            <option value="loss">亏损中</option>
+            <option value="pending">待出售</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>保修状态：</label>
+          <select v-model="filterWarranty">
+            <option value="">全部</option>
+            <option value="valid">还在保</option>
+            <option value="expired">已过保</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>挂单状态：</label>
+          <select v-model="filterListingStatus">
+            <option value="">全部</option>
+            <option value="hasActive">有在挂</option>
+            <option value="noActive">无在挂</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>搜索：</label>
+          <input v-model="searchKeyword" placeholder="搜索物品名称..." style="width: 180px;">
+        </div>
+        <button class="add-btn" @click="openItemModal()">+ 添加物品</button>
+      </div>
     </div>
-    <div class="stat-card loss">
-      <div class="label">待出售</div>
-      <div class="value">{{ pendingCount }} 件</div>
+
+    <div class="item-list" v-if="filteredItems.length > 0">
+      <div class="item-card" v-for="item in filteredItems" :key="item.id">
+        <div class="item-header">
+          <div>
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-tags">
+              <span class="tag tag-platform" v-for="p in getUniquePlatforms(item)" :key="p">{{ p }}</span>
+              <span class="tag" :class="getWarrantyTagClass(item)" v-if="item.warrantyMonths > 0">
+                {{ getWarrantyStatus(item) }}
+              </span>
+              <span class="tag" :class="getProfitTagClass(item)">
+                {{ getProfitStatusText(item) }}
+              </span>
+              <span class="tag tag-listing-count" v-if="getItemListings(item).length > 0">
+                {{ getItemListings(item).length }} 条挂单
+              </span>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 600;" :class="item.sellPrice ? (item.sellPrice >= item.buyPrice ? 'profit' : 'loss') : ''">
+              {{ item.sellPrice ? getReturnRate(item) + '%' : '待出售' }}
+            </div>
+            <div class="progress-bar" style="width: 120px;">
+              <div class="progress-fill" :class="getProgressClass(item)"
+                   :style="{ width: Math.min(getReturnRateNum(item), 100) + '%' }"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-details">
+          <div class="detail-item">
+            <div class="detail-label">购买价</div>
+            <div class="detail-value">¥{{ item.buyPrice.toFixed(2) }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">使用时长</div>
+            <div class="detail-value">{{ formatUsageMonths(item.usageMonths) }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">成交价</div>
+            <div class="detail-value" :class="item.sellPrice >= item.buyPrice ? 'profit' : 'loss'">
+              {{ item.sellPrice ? '¥' + item.sellPrice.toFixed(2) : '—' }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">盈亏</div>
+            <div class="detail-value" :class="getProfit(item) >= 0 ? 'profit' : 'loss'">
+              {{ item.sellPrice ? (getProfit(item) >= 0 ? '+' : '') + '¥' + getProfit(item).toFixed(2) : '—' }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">在挂平台</div>
+            <div class="detail-value active">
+              <span v-if="getActiveListingCount(item) > 0" class="detail-link" @click="jumpToListings(item)">
+                {{ getActiveListingCount(item) }} 个平台
+              </span>
+              <span v-else style="color: #999; font-weight: 400;">无</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="listing-section" v-if="getItemListings(item).length > 0">
+          <div class="listing-section-header">
+            <span class="listing-section-title">📋 挂单记录</span>
+            <button class="btn btn-listing" @click="openListingModal(null, item)">+ 新增挂单</button>
+          </div>
+          <div class="listing-mini-list">
+            <div class="listing-mini-card" v-for="l in getItemListings(item).slice(0, 4)" :key="l.id">
+              <div class="listing-mini-header">
+                <span class="listing-mini-platform">{{ l.platform }}</span>
+                <span class="status-badge" :class="'status-' + l.status">{{ getStatusText(l.status) }}</span>
+              </div>
+              <div class="listing-mini-price">¥{{ l.listedPrice.toFixed(2) }}</div>
+              <div class="listing-mini-meta">
+                <span>👁 {{ l.views || 0 }} 浏览</span>
+                <span>{{ formatDate(l.listedDate) }}</span>
+              </div>
+            </div>
+            <div class="listing-mini-card" v-if="getItemListings(item).length > 4" style="background: #f0f5ff; display: flex; align-items: center; justify-content: center; cursor: pointer;" @click="jumpToListings(item)">
+              <span style="color: #667eea; font-weight: 500;">+{{ getItemListings(item).length - 4 }} 更多</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-footer">
+          <div class="item-desc" v-if="item.description">{{ item.description }}</div>
+          <div class="item-actions">
+            <button class="btn btn-listing" @click="openListingModal(null, item)">挂单</button>
+            <button class="btn btn-edit" @click="openItemModal(item)">编辑</button>
+            <button class="btn btn-delete" @click="deleteItem(item.id)">删除</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="stat-card rate">
-      <div class="label">总体回本率</div>
-      <div class="value">{{ overallRate }}%</div>
+
+    <div class="empty" v-else>
+      <div class="empty-icon">📦</div>
+      <div class="empty-text">暂无记录，点击「添加物品」开始记录吧</div>
     </div>
   </div>
 
-  <div class="filters">
-    <div class="filter-row">
-      <div class="filter-group">
-        <label>平台：</label>
-        <select v-model="filterPlatform">
-          <option value="">全部平台</option>
-          <option v-for="p in allPlatforms" :key="p" :value="p">{{ p }}</option>
-        </select>
+  <!-- Listings Tab -->
+  <div v-if="activeTab === 'listings'">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">挂单总数</div>
+        <div class="value">{{ listings.length }}</div>
       </div>
-      <div class="filter-group">
-        <label>回本状态：</label>
-        <select v-model="filterStatus">
-          <option value="">全部</option>
-          <option value="profit">已回本</option>
-          <option value="loss">亏损中</option>
-          <option value="pending">待出售</option>
-        </select>
+      <div class="stat-card active">
+        <div class="label">在挂中</div>
+        <div class="value">{{ activeListingCount }}</div>
       </div>
-      <div class="filter-group">
-        <label>保修状态：</label>
-        <select v-model="filterWarranty">
-          <option value="">全部</option>
-          <option value="valid">还在保</option>
-          <option value="expired">已过保</option>
-        </select>
+      <div class="stat-card profit">
+        <div class="label">已成交</div>
+        <div class="value">{{ soldListingCount }}</div>
       </div>
-      <div class="filter-group">
-        <label>搜索：</label>
-        <input v-model="searchKeyword" placeholder="搜索物品名称..." style="width: 180px;">
+      <div class="stat-card views">
+        <div class="label">总浏览量</div>
+        <div class="value">{{ totalViews }}</div>
       </div>
-      <button class="add-btn" @click="openModal()">+ 添加物品</button>
+      <div class="stat-card rate">
+        <div class="label">平均挂价</div>
+        <div class="value">¥{{ avgListedPrice }}</div>
+      </div>
     </div>
-  </div>
 
-  <div class="item-list" v-if="filteredItems.length > 0">
-    <div class="item-card" v-for="item in filteredItems" :key="item.id">
-      <div class="item-header">
-        <div>
-          <div class="item-name">{{ item.name }}</div>
-          <div class="item-tags">
-            <span class="tag tag-platform" v-for="p in item.platforms" :key="p">{{ p }}</span>
-            <span class="tag" :class="getWarrantyTagClass(item)" v-if="item.warrantyMonths > 0">
-              {{ getWarrantyStatus(item) }}
-            </span>
-            <span class="tag" :class="getProfitTagClass(item)">
-              {{ getProfitStatusText(item) }}
-            </span>
+    <div class="summary-section">
+      <div class="summary-title">📊 平台汇总</div>
+      <div class="summary-grid">
+        <div class="summary-item" v-for="sum in platformSummary" :key="sum.platform">
+          <div class="summary-item-label">{{ sum.platform }}</div>
+          <div class="summary-item-value highlight">{{ sum.count }} 单</div>
+          <div style="font-size: 12px; color: #888; margin-top: 4px;">
+            在挂 {{ sum.active }} · 成交 {{ sum.sold }} · ¥{{ sum.avgPrice }}均
           </div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-size: 20px; font-weight: 600;" :class="item.sellPrice ? (item.sellPrice >= item.buyPrice ? 'profit' : 'loss') : ''">
-            {{ item.sellPrice ? getReturnRate(item) + '%' : '待出售' }}
-          </div>
-          <div class="progress-bar" style="width: 120px;">
-            <div class="progress-fill" :class="getProgressClass(item)"
-                 :style="{ width: Math.min(getReturnRateNum(item), 100) + '%' }"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="item-details">
-        <div class="detail-item">
-          <div class="detail-label">购买价</div>
-          <div class="detail-value">¥{{ item.buyPrice.toFixed(2) }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">使用时长</div>
-          <div class="detail-value">{{ formatUsageMonths(item.usageMonths) }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">成交价</div>
-          <div class="detail-value" :class="item.sellPrice >= item.buyPrice ? 'profit' : 'loss'">
-            {{ item.sellPrice ? '¥' + item.sellPrice.toFixed(2) : '—' }}
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">盈亏</div>
-          <div class="detail-value" :class="getProfit(item) >= 0 ? 'profit' : 'loss'">
-            {{ item.sellPrice ? (getProfit(item) >= 0 ? '+' : '') + '¥' + getProfit(item).toFixed(2) : '—' }}
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">保修剩余</div>
-          <div class="detail-value" :class="getWarrantyRemaining(item) > 0 ? 'profit' : 'loss'">
-            {{ item.warrantyMonths > 0 ? getWarrantyRemainingText(item) : '无保修' }}
-          </div>
-        </div>
-      </div>
-
-      <div class="item-footer">
-        <div class="item-desc" v-if="item.description">{{ item.description }}</div>
-        <div class="item-actions">
-          <button class="btn btn-edit" @click="openModal(item)">编辑</button>
-          <button class="btn btn-delete" @click="deleteItem(item.id)">删除</button>
         </div>
       </div>
     </div>
+
+    <div class="filters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>关联物品：</label>
+          <select v-model="listingFilterItemId">
+            <option value="">全部物品</option>
+            <option v-for="it in items" :key="it.id" :value="it.id">{{ it.name }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>平台：</label>
+          <select v-model="listingFilterPlatform">
+            <option value="">全部平台</option>
+            <option v-for="p in allPlatforms" :key="p" :value="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>挂单状态：</label>
+          <select v-model="listingFilterStatus">
+            <option value="">全部状态</option>
+            <option value="listed">在挂中</option>
+            <option value="unlisted">已下架</option>
+            <option value="sold">已成交</option>
+            <option value="suspended">已暂停</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>价格区间：</label>
+          <input type="number" v-model.number="listingFilterMinPrice" min="0" placeholder="最低价" style="width: 100px;">
+          <span>—</span>
+          <input type="number" v-model.number="listingFilterMaxPrice" min="0" placeholder="最高价" style="width: 100px;">
+        </div>
+        <div class="filter-group">
+          <label>搜索：</label>
+          <input v-model="listingSearchKeyword" placeholder="搜索备注..." style="width: 180px;">
+        </div>
+        <button class="add-btn" @click="openListingModal()">+ 新增挂单</button>
+      </div>
+    </div>
+
+    <div class="listing-table" v-if="filteredListings.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>物品</th>
+            <th>平台</th>
+            <th>挂价</th>
+            <th>浏览量</th>
+            <th>状态</th>
+            <th>挂单日期</th>
+            <th>结束日期</th>
+            <th>备注</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="listing in filteredListings" :key="listing.id">
+            <td>
+              <span class="item-link" @click="jumpToItem(listing.itemId)">{{ getItemName(listing.itemId) }}</span>
+            </td>
+            <td>{{ listing.platform }}</td>
+            <td style="font-weight: 600;">¥{{ listing.listedPrice.toFixed(2) }}</td>
+            <td>{{ listing.views || 0 }}</td>
+            <td><span class="status-badge" :class="'status-' + listing.status">{{ getStatusText(listing.status) }}</span></td>
+            <td>{{ formatDate(listing.listedDate) }}</td>
+            <td>{{ listing.endDate ? formatDate(listing.endDate) : '—' }}</td>
+            <td style="color: #888; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ listing.notes || '—' }}</td>
+            <td>
+              <button class="btn btn-history" @click="openHistoryModal(listing)" style="margin-right: 4px;">历史</button>
+              <button class="btn btn-edit" @click="openListingModal(listing)" style="margin-right: 4px;">编辑</button>
+              <button class="btn btn-delete" @click="deleteListing(listing.id)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty" v-else>
+      <div class="empty-icon">🏷️</div>
+      <div class="empty-text">暂无挂单记录，点击「新增挂单」开始记录吧</div>
+    </div>
   </div>
 
-  <div class="empty" v-else>
-    <div class="empty-icon">📦</div>
-    <div class="empty-text">暂无记录，点击「添加物品」开始记录吧</div>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal-mask" :class="{ show: showModal }" @click.self="closeModal">
+  <!-- Item Modal -->
+  <div class="modal-mask" :class="{ show: showItemModal }" @click.self="closeItemModal">
     <div class="modal">
       <div class="modal-header">
         <div class="modal-title">{{ editingItem ? '编辑物品' : '添加物品' }}</div>
-        <button class="modal-close" @click="closeModal">×</button>
+        <button class="modal-close" @click="closeItemModal">×</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
           <label>物品名称<span class="required">*</span></label>
-          <input v-model="form.name" placeholder="例如：iPhone 13">
+          <input v-model="itemForm.name" placeholder="例如：iPhone 13">
         </div>
         
         <div class="form-row">
           <div class="form-group">
             <label>购买价格 (元)<span class="required">*</span></label>
-            <input type="number" v-model.number="form.buyPrice" min="0" step="0.01" placeholder="0.00">
+            <input type="number" v-model.number="itemForm.buyPrice" min="0" step="0.01" placeholder="0.00">
           </div>
           <div class="form-group">
             <label>使用时长 (月)<span class="required">*</span></label>
-            <input type="number" v-model.number="form.usageMonths" min="0" step="1" placeholder="0">
+            <input type="number" v-model.number="itemForm.usageMonths" min="0" step="1" placeholder="0">
           </div>
         </div>
 
         <div class="form-group">
           <label>挂过的平台</label>
           <div class="platform-checkboxes">
-            <label class="platform-checkbox" :class="{ checked: form.platforms.includes(p) }"
+            <label class="platform-checkbox" :class="{ checked: itemForm.platforms.includes(p) }"
                    v-for="p in platformOptions" :key="p">
-              <input type="checkbox" :value="p" v-model="form.platforms">
+              <input type="checkbox" :value="p" v-model="itemForm.platforms">
               {{ p }}
             </label>
           </div>
@@ -479,27 +881,136 @@
         <div class="form-row">
           <div class="form-group">
             <label>成交价格 (元)</label>
-            <input type="number" v-model.number="form.sellPrice" min="0" step="0.01" placeholder="未出售留空">
+            <input type="number" v-model.number="itemForm.sellPrice" min="0" step="0.01" placeholder="未出售留空">
           </div>
           <div class="form-group">
             <label>保修期 (月)</label>
-            <input type="number" v-model.number="form.warrantyMonths" min="0" step="1" placeholder="0为无保修">
+            <input type="number" v-model.number="itemForm.warrantyMonths" min="0" step="1" placeholder="0为无保修">
           </div>
         </div>
 
         <div class="form-group">
           <label>购买日期</label>
-          <input type="date" v-model="form.buyDate">
+          <input type="date" v-model="itemForm.buyDate">
         </div>
 
         <div class="form-group">
           <label>备注</label>
-          <textarea v-model="form.description" rows="3" placeholder="选填，记录物品详情..."></textarea>
+          <textarea v-model="itemForm.description" rows="3" placeholder="选填，记录物品详情..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-cancel" @click="closeModal">取消</button>
+        <button class="btn btn-cancel" @click="closeItemModal">取消</button>
         <button class="btn btn-confirm" @click="saveItem">{{ editingItem ? '保存' : '添加' }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Listing Modal -->
+  <div class="modal-mask" :class="{ show: showListingModal }" @click.self="closeListingModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">{{ editingListing ? '编辑挂单' : '新增挂单' }}</div>
+        <button class="modal-close" @click="closeListingModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>关联物品<span class="required">*</span></label>
+          <select v-model="listingForm.itemId">
+            <option value="">请选择物品</option>
+            <option v-for="it in items" :key="it.id" :value="it.id">{{ it.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>平台<span class="required">*</span></label>
+            <select v-model="listingForm.platform">
+              <option value="">请选择平台</option>
+              <option v-for="p in platformOptions" :key="p" :value="p">{{ p }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>挂价 (元)<span class="required">*</span></label>
+            <input type="number" v-model.number="listingForm.listedPrice" min="0" step="0.01" placeholder="0.00">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>浏览量</label>
+            <input type="number" v-model.number="listingForm.views" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>状态<span class="required">*</span></label>
+            <select v-model="listingForm.status">
+              <option value="listed">在挂中</option>
+              <option value="unlisted">已下架</option>
+              <option value="sold">已成交</option>
+              <option value="suspended">已暂停</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>挂单日期<span class="required">*</span></label>
+            <input type="date" v-model="listingForm.listedDate">
+          </div>
+          <div class="form-group">
+            <label>结束日期</label>
+            <input type="date" v-model="listingForm.endDate">
+          </div>
+        </div>
+
+        <div class="form-group" v-if="editingListing">
+          <label>状态变更备注</label>
+          <input v-model="listingForm.statusChangeNote" placeholder="记录本次状态变更原因...">
+        </div>
+
+        <div class="form-group">
+          <label>备注</label>
+          <textarea v-model="listingForm.notes" rows="3" placeholder="选填，挂单链接、描述等..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" @click="closeListingModal">取消</button>
+        <button class="btn btn-confirm" @click="saveListing">{{ editingListing ? '保存' : '添加' }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div class="modal-mask" :class="{ show: showHistoryModal }" @click.self="closeHistoryModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">📜 状态变更历史</div>
+        <button class="modal-close" @click="closeHistoryModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div v-if="historyListing" style="margin-bottom: 20px; padding: 12px; background: #fafafa; border-radius: 8px;">
+          <div style="font-weight: 600; margin-bottom: 4px;">{{ getItemName(historyListing.itemId) }} · {{ historyListing.platform }}</div>
+          <div style="font-size: 13px; color: #888;">当前挂价：¥{{ historyListing.listedPrice.toFixed(2) }} · 当前状态：<span class="status-badge" :class="'status-' + historyListing.status">{{ getStatusText(historyListing.status) }}</span></div>
+        </div>
+        <div class="status-history" v-if="historyListing && historyListing.statusHistory && historyListing.statusHistory.length > 0">
+          <div class="history-timeline">
+            <div class="history-item" v-for="(h, idx) in historyListing.statusHistory.slice().reverse()" :key="idx">
+              <div class="history-status">
+                <span class="status-badge" :class="'status-' + h.status">{{ getStatusText(h.status) }}</span>
+                <span style="margin-left: 8px; color: #666; font-weight: 400;">→ 价格 ¥{{ (h.price || 0).toFixed(2) }}</span>
+              </div>
+              <div class="history-meta">{{ formatDateTime(h.timestamp) }}</div>
+              <div class="history-note" v-if="h.note">{{ h.note }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="empty" v-else style="padding: 30px 20px;">
+          <div class="empty-icon">📭</div>
+          <div class="empty-text">暂无状态变更记录</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-confirm" @click="closeHistoryModal">关闭</button>
       </div>
     </div>
   </div>
@@ -510,17 +1021,35 @@ const { createApp, ref, computed, onMounted, watch } = Vue;
 
 createApp({
   setup() {
+    const activeTab = ref('items');
     const items = ref([]);
-    const showModal = ref(false);
+    const listings = ref([]);
+    
+    const showItemModal = ref(false);
+    const showListingModal = ref(false);
+    const showHistoryModal = ref(false);
+    
     const editingItem = ref(null);
+    const editingListing = ref(null);
+    const historyListing = ref(null);
+    
     const filterPlatform = ref('');
     const filterStatus = ref('');
     const filterWarranty = ref('');
+    const filterListingStatus = ref('');
     const searchKeyword = ref('');
     
-    const platformOptions = ['闲鱼', '转转', '爱回收', '拍拍', '找靓机', '孔夫子', '多抓鱼', '其他'];
+    const listingFilterItemId = ref('');
+    const listingFilterPlatform = ref('');
+    const listingFilterStatus = ref('');
+    const listingFilterMinPrice = ref(null);
+    const listingFilterMaxPrice = ref(null);
+    const listingSearchKeyword = ref('');
     
-    const defaultForm = () => ({
+    const platformOptions = ['闲鱼', '转转', '爱回收', '拍拍', '找靓机', '孔夫子', '多抓鱼', '其他'];
+    const statusOptions = ['listed', 'unlisted', 'sold', 'suspended'];
+    
+    const defaultItemForm = () => ({
       name: '',
       buyPrice: 0,
       usageMonths: 0,
@@ -531,13 +1060,27 @@ createApp({
       description: ''
     });
     
-    const form = ref(defaultForm());
+    const defaultListingForm = () => ({
+      itemId: '',
+      platform: '',
+      listedPrice: 0,
+      views: 0,
+      status: 'listed',
+      listedDate: new Date().toISOString().split('T')[0],
+      endDate: '',
+      notes: '',
+      statusChangeNote: ''
+    });
+    
+    const itemForm = ref(defaultItemForm());
+    const listingForm = ref(defaultListingForm());
 
     const allPlatforms = computed(() => {
       const set = new Set();
       items.value.forEach(item => {
         item.platforms.forEach(p => set.add(p));
       });
+      listings.value.forEach(l => set.add(l.platform));
       return Array.from(set);
     });
 
@@ -555,6 +1098,35 @@ createApp({
       const totalSell = items.value.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
       if (totalCost === 0) return '0.00';
       return ((totalSell / totalCost) * 100).toFixed(2);
+    });
+
+    const totalListings = computed(() => listings.value.length);
+    const totalActiveListings = computed(() => listings.value.filter(l => l.status === 'listed').length);
+
+    const activeListingCount = computed(() => listings.value.filter(l => l.status === 'listed').length);
+    const soldListingCount = computed(() => listings.value.filter(l => l.status === 'sold').length);
+    const totalViews = computed(() => listings.value.reduce((sum, l) => sum + (l.views || 0), 0));
+    const avgListedPrice = computed(() => {
+      if (listings.value.length === 0) return '0.00';
+      const sum = listings.value.reduce((s, l) => s + l.listedPrice, 0);
+      return (sum / listings.value.length).toFixed(2);
+    });
+
+    const platformSummary = computed(() => {
+      const map = {};
+      listings.value.forEach(l => {
+        if (!map[l.platform]) {
+          map[l.platform] = { platform: l.platform, count: 0, active: 0, sold: 0, totalPrice: 0 };
+        }
+        map[l.platform].count++;
+        if (l.status === 'listed') map[l.platform].active++;
+        if (l.status === 'sold') map[l.platform].sold++;
+        map[l.platform].totalPrice += l.listedPrice;
+      });
+      return Object.values(map).map(m => ({
+        ...m,
+        avgPrice: m.count > 0 ? (m.totalPrice / m.count).toFixed(0) : '0'
+      }));
     });
 
     const getReturnRateNum = (item) => {
@@ -615,9 +1187,44 @@ createApp({
       return m > 0 ? years + ' 年 ' + m + ' 个月' : years + ' 年';
     };
 
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '—';
+      return dateStr;
+    };
+
+    const formatDateTime = (timestamp) => {
+      if (!timestamp) return '—';
+      const d = new Date(timestamp);
+      return d.toLocaleString('zh-CN');
+    };
+
+    const getStatusText = (status) => {
+      const map = { listed: '在挂中', unlisted: '已下架', sold: '已成交', suspended: '已暂停' };
+      return map[status] || status;
+    };
+
+    const getItemListings = (item) => {
+      return listings.value.filter(l => l.itemId === item.id);
+    };
+
+    const getUniquePlatforms = (item) => {
+      const set = new Set(item.platforms || []);
+      getItemListings(item).forEach(l => set.add(l.platform));
+      return Array.from(set);
+    };
+
+    const getActiveListingCount = (item) => {
+      return getItemListings(item).filter(l => l.status === 'listed').length;
+    };
+
+    const getItemName = (itemId) => {
+      const item = items.value.find(i => i.id === itemId);
+      return item ? item.name : '未知物品';
+    };
+
     const filteredItems = computed(() => {
       return items.value.filter(item => {
-        if (filterPlatform.value && !item.platforms.includes(filterPlatform.value)) return false;
+        if (filterPlatform.value && !getUniquePlatforms(item).includes(filterPlatform.value)) return false;
         
         if (filterStatus.value === 'profit' && (!item.sellPrice || item.sellPrice < item.buyPrice)) return false;
         if (filterStatus.value === 'loss' && (!item.sellPrice || item.sellPrice >= item.buyPrice)) return false;
@@ -626,46 +1233,78 @@ createApp({
         if (filterWarranty.value === 'valid' && getWarrantyRemaining(item) <= 0) return false;
         if (filterWarranty.value === 'expired' && getWarrantyRemaining(item) > 0) return false;
         
+        if (filterListingStatus.value === 'hasActive' && getActiveListingCount(item) === 0) return false;
+        if (filterListingStatus.value === 'noActive' && getActiveListingCount(item) > 0) return false;
+        
         if (searchKeyword.value && !item.name.toLowerCase().includes(searchKeyword.value.toLowerCase())) return false;
         
         return true;
       });
     });
 
-    const openModal = (item = null) => {
-      if (item) {
-        editingItem.value = item;
-        form.value = { ...item, platforms: [...item.platforms] };
-      } else {
-        editingItem.value = null;
-        form.value = defaultForm();
-      }
-      showModal.value = true;
+    const filteredListings = computed(() => {
+      return listings.value.filter(l => {
+        if (listingFilterItemId.value && l.itemId !== listingFilterItemId.value) return false;
+        if (listingFilterPlatform.value && l.platform !== listingFilterPlatform.value) return false;
+        if (listingFilterStatus.value && l.status !== listingFilterStatus.value) return false;
+        if (listingFilterMinPrice.value !== null && l.listedPrice < listingFilterMinPrice.value) return false;
+        if (listingFilterMaxPrice.value !== null && l.listedPrice > listingFilterMaxPrice.value) return false;
+        if (listingSearchKeyword.value) {
+          const kw = listingSearchKeyword.value.toLowerCase();
+          const noteOk = l.notes && l.notes.toLowerCase().includes(kw);
+          const itemOk = getItemName(l.itemId).toLowerCase().includes(kw);
+          if (!noteOk && !itemOk) return false;
+        }
+        return true;
+      }).sort((a, b) => {
+        return new Date(b.listedDate) - new Date(a.listedDate);
+      });
+    });
+
+    const jumpToListings = (item) => {
+      activeTab.value = 'listings';
+      listingFilterItemId.value = item.id;
     };
 
-    const closeModal = () => {
-      showModal.value = false;
+    const jumpToItem = (itemId) => {
+      activeTab.value = 'items';
+      searchKeyword.value = getItemName(itemId);
+    };
+
+    const openItemModal = (item = null) => {
+      if (item) {
+        editingItem.value = item;
+        itemForm.value = { ...item, platforms: [...item.platforms] };
+      } else {
+        editingItem.value = null;
+        itemForm.value = defaultItemForm();
+      }
+      showItemModal.value = true;
+    };
+
+    const closeItemModal = () => {
+      showItemModal.value = false;
       editingItem.value = null;
     };
 
     const saveItem = () => {
-      if (!form.value.name || !form.value.name.trim()) {
+      if (!itemForm.value.name || !itemForm.value.name.trim()) {
         alert('请输入物品名称');
         return;
       }
-      if (!form.value.buyPrice || form.value.buyPrice <= 0) {
+      if (!itemForm.value.buyPrice || itemForm.value.buyPrice <= 0) {
         alert('请输入有效的购买价格');
         return;
       }
-      if (form.value.usageMonths === null || form.value.usageMonths < 0) {
+      if (itemForm.value.usageMonths === null || itemForm.value.usageMonths < 0) {
         alert('请输入有效的使用时长');
         return;
       }
 
       const payload = {
-        ...form.value,
-        platforms: [...form.value.platforms],
-        sellPrice: form.value.sellPrice > 0 ? form.value.sellPrice : null
+        ...itemForm.value,
+        platforms: [...itemForm.value.platforms],
+        sellPrice: itemForm.value.sellPrice > 0 ? itemForm.value.sellPrice : null
       };
 
       if (editingItem.value) {
@@ -677,27 +1316,152 @@ createApp({
         items.value.push({ ...payload, id: Date.now() });
       }
       saveToLocal();
-      closeModal();
+      closeItemModal();
     };
 
     const deleteItem = (id) => {
-      if (confirm('确定要删除这条记录吗？')) {
+      const hasListings = listings.value.some(l => l.itemId === id);
+      let msg = '确定要删除这条记录吗？';
+      if (hasListings) {
+        msg = '该物品下有关联挂单记录，删除后挂单也会被删除。确定要删除吗？';
+      }
+      if (confirm(msg)) {
         items.value = items.value.filter(i => i.id !== id);
+        listings.value = listings.value.filter(l => l.itemId !== id);
         saveToLocal();
       }
     };
 
+    const openListingModal = (listing = null, preselectedItem = null) => {
+      if (listing) {
+        editingListing.value = listing;
+        listingForm.value = { ...listing, statusChangeNote: '' };
+      } else {
+        editingListing.value = null;
+        listingForm.value = defaultListingForm();
+        if (preselectedItem) {
+          listingForm.value.itemId = preselectedItem.id;
+        }
+      }
+      showListingModal.value = true;
+    };
+
+    const closeListingModal = () => {
+      showListingModal.value = false;
+      editingListing.value = null;
+    };
+
+    const saveListing = () => {
+      if (!listingForm.value.itemId) {
+        alert('请选择关联物品');
+        return;
+      }
+      if (!listingForm.value.platform) {
+        alert('请选择平台');
+        return;
+      }
+      if (!listingForm.value.listedPrice || listingForm.value.listedPrice <= 0) {
+        alert('请输入有效的挂价');
+        return;
+      }
+      if (!listingForm.value.listedDate) {
+        alert('请选择挂单日期');
+        return;
+      }
+
+      const payload = {
+        itemId: listingForm.value.itemId,
+        platform: listingForm.value.platform,
+        listedPrice: listingForm.value.listedPrice,
+        views: listingForm.value.views || 0,
+        status: listingForm.value.status,
+        listedDate: listingForm.value.listedDate,
+        endDate: listingForm.value.endDate || null,
+        notes: listingForm.value.notes
+      };
+
+      if (editingListing.value) {
+        const index = listings.value.findIndex(l => l.id === editingListing.value.id);
+        if (index !== -1) {
+          const old = listings.value[index];
+          const statusChanged = old.status !== payload.status || old.listedPrice !== payload.listedPrice;
+          
+          const history = [...(old.statusHistory || [])];
+          if (statusChanged || listingForm.value.statusChangeNote) {
+            history.push({
+              status: payload.status,
+              price: payload.listedPrice,
+              note: listingForm.value.statusChangeNote || (statusChanged ? '状态/价格变更' : ''),
+              timestamp: new Date().toISOString()
+            });
+          }
+          
+          listings.value[index] = { 
+            ...payload, 
+            id: editingListing.value.id,
+            statusHistory: history
+          };
+        }
+      } else {
+        const newId = Date.now();
+        const newListing = {
+          ...payload,
+          id: newId,
+          statusHistory: [{
+            status: payload.status,
+            price: payload.listedPrice,
+            note: '创建挂单',
+            timestamp: new Date().toISOString()
+          }]
+        };
+        listings.value.push(newListing);
+        
+        const item = items.value.find(i => i.id === payload.itemId);
+        if (item && !item.platforms.includes(payload.platform)) {
+          item.platforms.push(payload.platform);
+        }
+      }
+      saveToLocal();
+      closeListingModal();
+    };
+
+    const deleteListing = (id) => {
+      if (confirm('确定要删除这条挂单记录吗？')) {
+        listings.value = listings.value.filter(l => l.id !== id);
+        saveToLocal();
+      }
+    };
+
+    const openHistoryModal = (listing) => {
+      historyListing.value = listing;
+      showHistoryModal.value = true;
+    };
+
+    const closeHistoryModal = () => {
+      showHistoryModal.value = false;
+      historyListing.value = null;
+    };
+
     const saveToLocal = () => {
       localStorage.setItem('secondhand-ledger-items', JSON.stringify(items.value));
+      localStorage.setItem('secondhand-ledger-listings', JSON.stringify(listings.value));
     };
 
     const loadFromLocal = () => {
-      const data = localStorage.getItem('secondhand-ledger-items');
-      if (data) {
+      const itemsData = localStorage.getItem('secondhand-ledger-items');
+      if (itemsData) {
         try {
-          items.value = JSON.parse(data);
+          items.value = JSON.parse(itemsData);
         } catch (e) {
-          console.error('Failed to load data:', e);
+          console.error('Failed to load items:', e);
+        }
+      }
+      const listingsData = localStorage.getItem('secondhand-ledger-listings');
+      if (listingsData) {
+        try {
+          listings.value = JSON.parse(listingsData);
+        } catch (e) {
+          console.error('Failed to load listings:', e);
         }
       }
     };
@@ -707,20 +1471,42 @@ createApp({
     });
 
     return {
+      activeTab,
       items,
-      showModal,
+      listings,
+      showItemModal,
+      showListingModal,
+      showHistoryModal,
       editingItem,
-      form,
+      editingListing,
+      historyListing,
+      itemForm,
+      listingForm,
       platformOptions,
       allPlatforms,
       filterPlatform,
       filterStatus,
       filterWarranty,
+      filterListingStatus,
       searchKeyword,
+      listingFilterItemId,
+      listingFilterPlatform,
+      listingFilterStatus,
+      listingFilterMinPrice,
+      listingFilterMaxPrice,
+      listingSearchKeyword,
       profitCount,
       pendingCount,
       overallRate,
+      totalListings,
+      totalActiveListings,
+      activeListingCount,
+      soldListingCount,
+      totalViews,
+      avgListedPrice,
+      platformSummary,
       filteredItems,
+      filteredListings,
       getReturnRate,
       getReturnRateNum,
       getProfit,
@@ -732,10 +1518,25 @@ createApp({
       getProfitStatusText,
       getProgressClass,
       formatUsageMonths,
-      openModal,
-      closeModal,
+      formatDate,
+      formatDateTime,
+      getStatusText,
+      getItemListings,
+      getUniquePlatforms,
+      getActiveListingCount,
+      getItemName,
+      jumpToListings,
+      jumpToItem,
+      openItemModal,
+      closeItemModal,
       saveItem,
-      deleteItem
+      deleteItem,
+      openListingModal,
+      closeListingModal,
+      saveListing,
+      deleteListing,
+      openHistoryModal,
+      closeHistoryModal
     };
   }
 }).mount('#app');
