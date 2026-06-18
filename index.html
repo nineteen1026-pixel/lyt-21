@@ -698,16 +698,61 @@
     border-bottom: 1px solid #f0f0f0;
   }
 
+  /* Commission Table */
+  .commission-table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .commission-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .commission-table th {
+    background: #fafafa;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .commission-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .commission-table tr:last-child td { border-bottom: none; }
+  .commission-table tr:hover { background: #fafafa; }
+
+  .calc-result {
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 6px;
+  }
+  .calc-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+
   @media (max-width: 768px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .item-details { grid-template-columns: repeat(2, 1fr); }
+    .item-details { grid-template-columns: repeat(2, 1fr) !important; }
     .filter-row { flex-direction: column; align-items: stretch; }
     .add-btn { margin-left: 0; width: 100%; }
     .form-row { grid-template-columns: 1fr; }
     .listing-table { overflow-x: auto; }
     .listing-table table { min-width: 800px; }
     .order-table { overflow-x: auto; }
-    .order-table table { min-width: 900px; }
+    .order-table table { min-width: 1100px; }
+    .commission-table { overflow-x: auto; }
+    .commission-table table { min-width: 900px; }
+    .tabs { flex-wrap: wrap; }
+    .tab { flex: 1 1 auto; min-width: 80px; font-size: 12px; padding: 10px 12px; }
   }
 </style>
 </head>
@@ -722,6 +767,7 @@
     <button class="tab" :class="{ active: activeTab === 'items' }" @click="activeTab = 'items'">📦 物品主档</button>
     <button class="tab" :class="{ active: activeTab === 'listings' }" @click="activeTab = 'listings'">🏷️ 挂单台账</button>
     <button class="tab" :class="{ active: activeTab === 'orders' }" @click="activeTab = 'orders'">📋 出售订单</button>
+    <button class="tab" :class="{ active: activeTab === 'commission' }" @click="activeTab = 'commission'">💵 佣金配置</button>
   </div>
 
   <!-- Items Tab -->
@@ -821,7 +867,7 @@
           </div>
         </div>
 
-        <div class="item-details">
+        <div class="item-details" style="grid-template-columns: repeat(6, 1fr);">
           <div class="detail-item">
             <div class="detail-label">购买价</div>
             <div class="detail-value">¥{{ item.buyPrice.toFixed(2) }}</div>
@@ -832,23 +878,26 @@
           </div>
           <div class="detail-item">
             <div class="detail-label">成交价</div>
-            <div class="detail-value" :class="getProfit(item) >= 0 ? 'profit' : 'loss'">
+            <div class="detail-value">
               {{ item.sellPrice ? '¥' + item.sellPrice.toFixed(2) : '—' }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">总费用</div>
+            <div class="detail-value" style="color: #ff4d4f;">
+              {{ item.sellPrice ? '-¥' + (item.totalFees || 0).toFixed(2) : '—' }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">净收入</div>
+            <div class="detail-value" style="color: #52c41a; font-weight: 600;">
+              {{ item.sellPrice ? '¥' + Math.max(0, (item.sellPrice || 0) - (item.totalFees || 0)).toFixed(2) : '—' }}
             </div>
           </div>
           <div class="detail-item">
             <div class="detail-label">盈亏</div>
             <div class="detail-value" :class="getProfit(item) >= 0 ? 'profit' : 'loss'">
               {{ item.sellPrice ? (getProfit(item) >= 0 ? '+' : '') + '¥' + getProfit(item).toFixed(2) : '—' }}
-            </div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">在挂平台</div>
-            <div class="detail-value active">
-              <span v-if="getActiveListingCount(item) > 0" class="detail-link" @click="jumpToListings(item)">
-                {{ getActiveListingCount(item) }} 个平台
-              </span>
-              <span v-else style="color: #999; font-weight: 400;">无</span>
             </div>
           </div>
         </div>
@@ -1050,16 +1099,34 @@
           <div class="summary-item-value highlight">¥{{ filteredTotalDealAmount }}</div>
         </div>
         <div class="summary-item">
+          <div class="summary-item-label">净收入</div>
+          <div class="summary-item-value" style="color: #52c41a;">¥{{ filteredTotalNetIncome }}</div>
+        </div>
+        <div class="summary-item">
           <div class="summary-item-label">已回款</div>
-          <div class="summary-item-value" style="color: #52c41a;">¥{{ filteredTotalPaidAmount }}</div>
+          <div class="summary-item-value" style="color: #1890ff;">¥{{ filteredTotalPaidAmount }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">平台佣金</div>
+          <div class="summary-item-value" style="color: #ff4d4f;">¥{{ filteredTotalCommission }}</div>
         </div>
         <div class="summary-item">
           <div class="summary-item-label">总费用</div>
-          <div class="summary-item-value" style="color: #ff4d4f;">¥{{ filteredTotalFees }}</div>
+          <div class="summary-item-value" style="color: #ff7a45;">¥{{ filteredTotalFees }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">总利润</div>
+          <div class="summary-item-value" :style="{ color: filteredTotalProfit >= 0 ? '#52c41a' : '#ff4d4f' }">
+            {{ filteredTotalProfit >= 0 ? '+' : '' }}¥{{ filteredTotalProfit }}
+          </div>
         </div>
         <div class="summary-item">
           <div class="summary-item-label">平均利润率</div>
           <div class="summary-item-value">{{ filteredAvgProfitRate }}%</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-label">平均佣金率</div>
+          <div class="summary-item-value">{{ filteredAvgCommissionRate }}%</div>
         </div>
       </div>
     </div>
@@ -1107,7 +1174,8 @@
             <th>物品</th>
             <th>平台</th>
             <th>成交价</th>
-            <th>费用</th>
+            <th>平台佣金</th>
+            <th>净收入</th>
             <th>实际利润</th>
             <th>回款进度</th>
             <th>状态</th>
@@ -1122,7 +1190,10 @@
             </td>
             <td>{{ order.platform }}</td>
             <td style="font-weight: 600;">¥{{ order.finalPrice ? order.finalPrice.toFixed(2) : (order.askPrice ? order.askPrice.toFixed(2) : '—') }}</td>
-            <td style="color: #ff4d4f;">¥{{ getOrderTotalFees(order).toFixed(2) }}</td>
+            <td style="color: #ff4d4f;">¥{{ (order.platformFee || 0).toFixed(2) }}</td>
+            <td style="color: #52c41a; font-weight: 600;">
+              {{ order.finalPrice ? '¥' + calculateNetIncome(order.platform, order.finalPrice, order.otherFees, order.shippingFee).toFixed(2) : '—' }}
+            </td>
             <td :class="getOrderProfit(order) >= 0 ? 'profit' : 'loss'" style="font-weight: 600;">
               {{ getOrderProfit(order) >= 0 ? '+' : '' }}¥{{ getOrderProfit(order).toFixed(2) }}
             </td>
@@ -1377,7 +1448,22 @@
         <div class="form-row">
           <div class="form-group">
             <label>平台佣金 (元)</label>
-            <input type="number" v-model.number="orderForm.platformFee" min="0" step="0.01" placeholder="0">
+            <div style="display: flex; gap: 8px;">
+              <input type="number" v-model.number="orderForm.platformFee" min="0" step="0.01" placeholder="0" style="flex: 1;">
+              <button 
+                type="button" 
+                class="btn btn-listing" 
+                @click="applyAutoCommission"
+                :disabled="!orderForm.platform || !orderForm.finalPrice"
+                style="white-space: nowrap;">
+                自动计算
+              </button>
+            </div>
+            <div v-if="orderForm.platform && orderForm.finalPrice && getCommissionRateByPlatform(orderForm.platform)" 
+                 style="font-size: 12px; color: #888; margin-top: 4px;">
+              {{ orderForm.platform }} 费率 {{ getCommissionRateByPlatform(orderForm.platform).rate }}%，
+              预估佣金 ¥{{ calculateCommission(orderForm.platform, orderForm.finalPrice).toFixed(2) }}
+            </div>
           </div>
           <div class="form-group">
             <label>运费 (元)</label>
@@ -1683,6 +1769,205 @@
       </div>
     </div>
   </div>
+
+  <!-- Commission Tab -->
+  <div v-if="activeTab === 'commission'">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">已配置平台</div>
+        <div class="value">{{ commissionRates.length }}</div>
+      </div>
+      <div class="stat-card profit">
+        <div class="label">已启用配置</div>
+        <div class="value">{{ enabledCommissionCount }}</div>
+      </div>
+      <div class="stat-card loss">
+        <div class="label">累计佣金支出</div>
+        <div class="value">¥{{ totalCommissionPaid }}</div>
+      </div>
+      <div class="stat-card rate">
+        <div class="label">平均佣金率</div>
+        <div class="value">{{ avgCommissionRate }}%</div>
+      </div>
+      <div class="stat-card active">
+        <div class="label">累计净收入</div>
+        <div class="value">¥{{ totalNetIncome }}</div>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <div class="summary-title">📊 各平台佣金汇总</div>
+      <div class="summary-grid" v-if="commissionPlatformSummary.length > 0">
+        <div class="summary-item" v-for="sum in commissionPlatformSummary" :key="sum.platform">
+          <div class="summary-item-label">{{ sum.platform }}</div>
+          <div class="summary-item-value highlight">¥{{ sum.totalCommission }}</div>
+          <div style="font-size: 12px; color: #888; margin-top: 4px;">
+            {{ sum.orderCount }} 单 · 费率 {{ sum.rate }}% · 净收 ¥{{ sum.totalNet }}
+          </div>
+        </div>
+      </div>
+      <div v-else class="empty" style="padding: 24px 20px; box-shadow: none;">
+        <div class="empty-text">暂无佣金配置，点击「新增费率」开始配置吧</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>启用状态：</label>
+          <select v-model="commissionFilterStatus">
+            <option value="">全部</option>
+            <option value="enabled">已启用</option>
+            <option value="disabled">已禁用</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>搜索：</label>
+          <input v-model="commissionSearchKeyword" placeholder="搜索平台名称..." style="width: 180px;">
+        </div>
+        <button class="add-btn" @click="openCommissionModal()">+ 新增费率</button>
+      </div>
+    </div>
+
+    <div class="commission-table" v-if="filteredCommissionRates.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>平台</th>
+            <th>佣金费率</th>
+            <th>最低佣金</th>
+            <th>最高佣金</th>
+            <th>状态</th>
+            <th>适用订单</th>
+            <th>累计佣金</th>
+            <th>备注</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="rate in filteredCommissionRates" :key="rate.id">
+            <td style="font-weight: 600;">{{ rate.platform }}</td>
+            <td style="color: #1890ff; font-weight: 600;">{{ rate.rate }}%</td>
+            <td>¥{{ (rate.minFee || 0).toFixed(2) }}</td>
+            <td>{{ rate.maxFee ? '¥' + rate.maxFee.toFixed(2) : '无上限' }}</td>
+            <td>
+              <span class="status-badge" :class="rate.isEnabled ? 'status-listed' : 'status-unlisted'">
+                {{ rate.isEnabled ? '已启用' : '已禁用' }}
+              </span>
+            </td>
+            <td>{{ getPlatformOrderCount(rate.platform) }} 单</td>
+            <td style="color: #ff4d4f;">¥{{ getPlatformTotalCommission(rate.platform).toFixed(2) }}</td>
+            <td style="color: #888; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              {{ rate.note || '—' }}
+            </td>
+            <td>
+              <button class="btn btn-edit" @click="toggleCommissionStatus(rate.id)" style="margin-right: 4px;">
+                {{ rate.isEnabled ? '禁用' : '启用' }}
+              </button>
+              <button class="btn btn-edit" @click="openCommissionModal(rate)" style="margin-right: 4px;">编辑</button>
+              <button class="btn btn-delete" @click="deleteCommissionRate(rate.id)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty" v-else>
+      <div class="empty-icon">💵</div>
+      <div class="empty-text">{{ commissionRates.length === 0 ? '暂无佣金费率配置，点击「新增费率」开始配置吧' : '没有匹配的配置，试试调整筛选条件' }}</div>
+    </div>
+
+    <div class="summary-section" style="margin-top: 20px;">
+      <div class="summary-title">🧮 佣金计算器</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>选择平台</label>
+          <select v-model="calcPlatform">
+            <option value="">请选择平台</option>
+            <option v-for="p in platformOptions" :key="p" :value="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>成交价格 (元)</label>
+          <input type="number" v-model.number="calcPrice" min="0" step="0.01" placeholder="输入成交价">
+        </div>
+        <div class="form-group" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: flex-end;">
+          <div class="calc-result" v-if="calcPlatform && calcPrice > 0">
+            <div class="calc-row">
+              <span>佣金金额：</span>
+              <span style="color: #ff4d4f; font-weight: 600;">¥{{ calculatedCommission.toFixed(2) }}</span>
+            </div>
+            <div class="calc-row">
+              <span>净收入：</span>
+              <span style="color: #52c41a; font-weight: 600;">¥{{ calculatedNetIncome.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Commission Rate Modal -->
+  <div class="modal-mask" :class="{ show: showCommissionModal }" @click.self="closeCommissionModal">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">{{ editingCommissionRate ? '编辑佣金费率' : '新增佣金费率' }}</div>
+        <button class="modal-close" @click="closeCommissionModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>平台<span class="required">*</span></label>
+          <select v-model="commissionForm.platform" :disabled="!!editingCommissionRate">
+            <option value="">请选择平台</option>
+            <option v-for="p in platformOptions" :key="p" :value="p">{{ p }}</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>佣金费率 (%)<span class="required">*</span></label>
+            <input type="number" v-model.number="commissionForm.rate" min="0" max="100" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>最低佣金 (元)</label>
+            <input type="number" v-model.number="commissionForm.minFee" min="0" step="0.01" placeholder="0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>最高佣金 (元)</label>
+          <input type="number" v-model.number="commissionForm.maxFee" min="0" step="0.01" placeholder="0为无上限">
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" v-model="commissionForm.isEnabled" style="margin-right: 6px;">
+            启用该费率配置
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>备注</label>
+          <textarea v-model="commissionForm.note" rows="2" placeholder="选填，配置说明..."></textarea>
+        </div>
+
+        <div class="fee-breakdown" v-if="commissionForm.platform && commissionForm.rate >= 0">
+          <div class="fee-row">
+            <span class="label">示例：成交价 ¥1000</span>
+            <span class="value" style="color: #ff4d4f;">佣金 ¥{{ calculateCommission(commissionForm.platform, 1000).toFixed(2) }}</span>
+          </div>
+          <div class="fee-row total">
+            <span>净收入</span>
+            <span class="value" style="color: #52c41a;">¥{{ (1000 - calculateCommission(commissionForm.platform, 1000)).toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" @click="closeCommissionModal">取消</button>
+        <button class="btn btn-confirm" @click="saveCommissionRate">{{ editingCommissionRate ? '保存' : '添加' }}</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1694,6 +1979,7 @@ createApp({
     const items = ref([]);
     const listings = ref([]);
     const sellOrders = ref([]);
+    const commissionRates = ref([]);
     
     const showItemModal = ref(false);
     const showListingModal = ref(false);
@@ -1701,6 +1987,7 @@ createApp({
     const showOrderModal = ref(false);
     const showPaymentModal = ref(false);
     const showOrderDetailModal = ref(false);
+    const showCommissionModal = ref(false);
     
     const editingItem = ref(null);
     const editingListing = ref(null);
@@ -1708,6 +1995,7 @@ createApp({
     const editingOrder = ref(null);
     const paymentOrder = ref(null);
     const detailOrder = ref(null);
+    const editingCommissionRate = ref(null);
     
     const filterPlatform = ref('');
     const filterStatus = ref('');
@@ -1726,6 +2014,11 @@ createApp({
     const orderFilterPlatform = ref('');
     const orderFilterStatus = ref('');
     const orderSearchKeyword = ref('');
+    
+    const commissionFilterStatus = ref('');
+    const commissionSearchKeyword = ref('');
+    const calcPlatform = ref('');
+    const calcPrice = ref(0);
     
     const platformOptions = ['闲鱼', '转转', '爱回收', '拍拍', '找靓机', '孔夫子', '多抓鱼', '其他'];
     const statusOptions = ['listed', 'unlisted', 'sold', 'suspended'];
@@ -1784,12 +2077,48 @@ createApp({
       person: '',
       note: ''
     });
+
+    const defaultCommissionRate = () => ({
+      platform: '',
+      rate: 0,
+      minFee: 0,
+      maxFee: null,
+      isEnabled: true,
+      note: ''
+    });
+
+    const getCommissionRateByPlatform = (platform) => {
+      const rate = commissionRates.value.find(r => r.platform === platform && r.isEnabled);
+      return rate || null;
+    };
+
+    const calculateCommission = (platform, price) => {
+      const rateConfig = getCommissionRateByPlatform(platform);
+      if (!rateConfig || !price || price <= 0) return 0;
+      
+      let fee = price * (rateConfig.rate / 100);
+      
+      if (rateConfig.minFee && fee < rateConfig.minFee) {
+        fee = rateConfig.minFee;
+      }
+      if (rateConfig.maxFee && fee > rateConfig.maxFee) {
+        fee = rateConfig.maxFee;
+      }
+      
+      return parseFloat(fee.toFixed(2));
+    };
+
+    const calculateNetIncome = (platform, price, otherFees = 0, shippingFee = 0) => {
+      const commission = calculateCommission(platform, price);
+      return parseFloat((price - commission - otherFees - shippingFee).toFixed(2));
+    };
     
     const itemForm = ref(defaultItemForm());
     const listingForm = ref(defaultListingForm());
     const orderForm = ref(defaultOrderForm());
     const paymentForm = ref(defaultPaymentForm());
     const newNegotiate = ref(defaultNegotiateForm());
+    const commissionForm = ref(defaultCommissionRate());
 
     const allPlatforms = computed(() => {
       const set = new Set();
@@ -1833,6 +2162,87 @@ createApp({
 
     const totalListings = computed(() => listings.value.length);
     const totalActiveListings = computed(() => listings.value.filter(l => l.status === 'listed').length);
+
+    const filteredCommissionRates = computed(() => {
+      return commissionRates.value.filter(r => {
+        if (commissionFilterStatus.value === 'enabled' && !r.isEnabled) return false;
+        if (commissionFilterStatus.value === 'disabled' && r.isEnabled) return false;
+        if (commissionSearchKeyword.value && !r.platform.toLowerCase().includes(commissionSearchKeyword.value.toLowerCase())) return false;
+        return true;
+      }).sort((a, b) => b.isEnabled - a.isEnabled);
+    });
+
+    const enabledCommissionCount = computed(() => commissionRates.value.filter(r => r.isEnabled).length);
+
+    const getPlatformOrderCount = (platform) => {
+      return sellOrders.value.filter(o => o.platform === platform && o.status !== 'cancelled' && o.finalPrice).length;
+    };
+
+    const getPlatformTotalCommission = (platform) => {
+      return sellOrders.value
+        .filter(o => o.platform === platform && o.status !== 'cancelled')
+        .reduce((sum, o) => sum + (o.platformFee || 0), 0);
+    };
+
+    const totalCommissionPaid = computed(() => {
+      const total = sellOrders.value
+        .filter(o => o.status !== 'cancelled')
+        .reduce((sum, o) => sum + (o.platformFee || 0), 0);
+      return total.toFixed(2);
+    });
+
+    const totalNetIncome = computed(() => {
+      const total = sellOrders.value
+        .filter(o => o.status !== 'cancelled' && o.finalPrice)
+        .reduce((sum, o) => {
+          const net = (o.finalPrice || 0) - getOrderTotalFees(o);
+          return sum + Math.max(0, net);
+        }, 0);
+      return total.toFixed(2);
+    });
+
+    const avgCommissionRate = computed(() => {
+      const completedOrders = sellOrders.value.filter(o => o.status !== 'cancelled' && o.finalPrice && o.finalPrice > 0);
+      if (completedOrders.length === 0) return '0.00';
+      const totalCommission = completedOrders.reduce((sum, o) => sum + (o.platformFee || 0), 0);
+      const totalPrice = completedOrders.reduce((sum, o) => sum + (o.finalPrice || 0), 0);
+      if (totalPrice === 0) return '0.00';
+      return ((totalCommission / totalPrice) * 100).toFixed(2);
+    });
+
+    const commissionPlatformSummary = computed(() => {
+      const map = {};
+      sellOrders.value.filter(o => o.status !== 'cancelled' && o.finalPrice).forEach(o => {
+        if (!map[o.platform]) {
+          const rateConfig = getCommissionRateByPlatform(o.platform);
+          map[o.platform] = {
+            platform: o.platform,
+            orderCount: 0,
+            totalCommission: 0,
+            totalNet: 0,
+            rate: rateConfig ? rateConfig.rate : 0
+          };
+        }
+        map[o.platform].orderCount++;
+        map[o.platform].totalCommission += o.platformFee || 0;
+        map[o.platform].totalNet += (o.finalPrice || 0) - getOrderTotalFees(o);
+      });
+      return Object.values(map).map(m => ({
+        ...m,
+        totalCommission: m.totalCommission.toFixed(2),
+        totalNet: m.totalNet.toFixed(2)
+      })).sort((a, b) => b.totalCommission - a.totalCommission);
+    });
+
+    const calculatedCommission = computed(() => {
+      if (!calcPlatform.value || !calcPrice.value || calcPrice.value <= 0) return 0;
+      return calculateCommission(calcPlatform.value, calcPrice.value);
+    });
+
+    const calculatedNetIncome = computed(() => {
+      if (!calcPlatform.value || !calcPrice.value || calcPrice.value <= 0) return 0;
+      return calculateNetIncome(calcPlatform.value, calcPrice.value);
+    });
 
     const listingFiltersActive = computed(() => {
       return !!(listingFilterItemId.value || listingFilterPlatform.value || listingFilterStatus.value ||
@@ -2331,6 +2741,32 @@ createApp({
       return ((totalProfit / totalCost) * 100).toFixed(2);
     });
 
+    const filteredTotalNetIncome = computed(() => {
+      const sum = filteredOrders.value
+        .filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status) && o.finalPrice)
+        .reduce((s, o) => {
+          const net = (o.finalPrice || 0) - getOrderTotalFees(o);
+          return s + Math.max(0, net);
+        }, 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredTotalCommission = computed(() => {
+      const sum = filteredOrders.value
+        .filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status))
+        .reduce((s, o) => s + (o.platformFee || 0), 0);
+      return sum.toFixed(2);
+    });
+
+    const filteredAvgCommissionRate = computed(() => {
+      const completedOrders = filteredOrders.value.filter(o => ['confirmed', 'partial_paid', 'paid', 'completed'].includes(o.status) && o.finalPrice && o.finalPrice > 0);
+      if (completedOrders.length === 0) return '0.00';
+      const totalCommission = completedOrders.reduce((s, o) => s + (o.platformFee || 0), 0);
+      const totalPrice = completedOrders.reduce((s, o) => s + (o.finalPrice || 0), 0);
+      if (totalPrice === 0) return '0.00';
+      return ((totalCommission / totalPrice) * 100).toFixed(2);
+    });
+
     const openOrderModal = (order = null) => {
       if (order) {
         editingOrder.value = order;
@@ -2375,6 +2811,9 @@ createApp({
         }
         if (orderForm.value.status === 'negotiating') {
           orderForm.value.status = 'confirmed';
+        }
+        if (orderForm.value.platform && (!orderForm.value.platformFee || orderForm.value.platformFee === 0)) {
+          orderForm.value.platformFee = calculateCommission(orderForm.value.platform, newNegotiate.value.price);
         }
       }
       newNegotiate.value = defaultNegotiateForm();
@@ -2435,6 +2874,8 @@ createApp({
         negotiateRecords: [...(orderForm.value.negotiateRecords || [])],
         paymentRecords: [...(orderForm.value.paymentRecords || [])]
       };
+
+      autoCalculateCommission(payload);
 
       if (editingOrder.value) {
         const index = sellOrders.value.findIndex(o => o.id === editingOrder.value.id);
@@ -2548,10 +2989,91 @@ createApp({
     const updateOverallStatsWithOrders = () => {
     };
 
+    const openCommissionModal = (rate = null) => {
+      if (rate) {
+        editingCommissionRate.value = rate;
+        commissionForm.value = { ...rate, maxFee: rate.maxFee || null };
+      } else {
+        editingCommissionRate.value = null;
+        commissionForm.value = defaultCommissionRate();
+      }
+      showCommissionModal.value = true;
+    };
+
+    const closeCommissionModal = () => {
+      showCommissionModal.value = false;
+      editingCommissionRate.value = null;
+    };
+
+    const saveCommissionRate = () => {
+      if (!commissionForm.value.platform) {
+        alert('请选择平台');
+        return;
+      }
+      if (commissionForm.value.rate === null || commissionForm.value.rate < 0) {
+        alert('请输入有效的佣金费率');
+        return;
+      }
+
+      const payload = {
+        platform: commissionForm.value.platform,
+        rate: parseFloat(commissionForm.value.rate) || 0,
+        minFee: parseFloat(commissionForm.value.minFee) || 0,
+        maxFee: commissionForm.value.maxFee && commissionForm.value.maxFee > 0 ? parseFloat(commissionForm.value.maxFee) : null,
+        isEnabled: commissionForm.value.isEnabled !== false,
+        note: commissionForm.value.note || ''
+      };
+
+      if (editingCommissionRate.value) {
+        const index = commissionRates.value.findIndex(r => r.id === editingCommissionRate.value.id);
+        if (index !== -1) {
+          commissionRates.value[index] = { ...payload, id: editingCommissionRate.value.id };
+        }
+      } else {
+        const exists = commissionRates.value.find(r => r.platform === payload.platform);
+        if (exists) {
+          alert('该平台已有佣金费率配置，请直接编辑现有配置');
+          return;
+        }
+        commissionRates.value.push({ ...payload, id: Date.now() });
+      }
+      saveToLocal();
+      closeCommissionModal();
+    };
+
+    const deleteCommissionRate = (id) => {
+      if (confirm('确定要删除这条佣金费率配置吗？')) {
+        commissionRates.value = commissionRates.value.filter(r => r.id !== id);
+        saveToLocal();
+      }
+    };
+
+    const toggleCommissionStatus = (id) => {
+      const rate = commissionRates.value.find(r => r.id === id);
+      if (rate) {
+        rate.isEnabled = !rate.isEnabled;
+        saveToLocal();
+      }
+    };
+
+    const autoCalculateCommission = (order) => {
+      if (!order.platform || !order.finalPrice) return;
+      const autoFee = calculateCommission(order.platform, order.finalPrice);
+      if (!order.platformFee || order.platformFee === 0) {
+        order.platformFee = autoFee;
+      }
+    };
+
+    const applyAutoCommission = () => {
+      if (!orderForm.value.platform || !orderForm.value.finalPrice) return;
+      orderForm.value.platformFee = calculateCommission(orderForm.value.platform, orderForm.value.finalPrice);
+    };
+
     const saveToLocal = () => {
       localStorage.setItem('secondhand-ledger-items', JSON.stringify(items.value));
       localStorage.setItem('secondhand-ledger-listings', JSON.stringify(listings.value));
       localStorage.setItem('secondhand-ledger-orders', JSON.stringify(sellOrders.value));
+      localStorage.setItem('secondhand-ledger-commissions', JSON.stringify(commissionRates.value));
     };
 
     const loadFromLocal = () => {
@@ -2577,6 +3099,14 @@ createApp({
           sellOrders.value = JSON.parse(ordersData);
         } catch (e) {
           console.error('Failed to load orders:', e);
+        }
+      }
+      const commissionsData = localStorage.getItem('secondhand-ledger-commissions');
+      if (commissionsData) {
+        try {
+          commissionRates.value = JSON.parse(commissionsData);
+        } catch (e) {
+          console.error('Failed to load commissions:', e);
         }
       }
     };
@@ -2650,6 +3180,9 @@ createApp({
       filteredTotalProfit,
       filteredPendingAmount,
       filteredAvgProfitRate,
+      filteredTotalNetIncome,
+      filteredTotalCommission,
+      filteredAvgCommissionRate,
       calculatedOrderProfit,
       getReturnRate,
       getReturnRateNum,
@@ -2698,7 +3231,35 @@ createApp({
       deletePaymentRecord,
       openOrderDetailModal,
       closeOrderDetailModal,
-      addNegotiateRecord
+      addNegotiateRecord,
+      commissionRates,
+      showCommissionModal,
+      editingCommissionRate,
+      commissionForm,
+      commissionFilterStatus,
+      commissionSearchKeyword,
+      calcPlatform,
+      calcPrice,
+      filteredCommissionRates,
+      enabledCommissionCount,
+      totalCommissionPaid,
+      totalNetIncome,
+      avgCommissionRate,
+      commissionPlatformSummary,
+      calculatedCommission,
+      calculatedNetIncome,
+      getPlatformOrderCount,
+      getPlatformTotalCommission,
+      calculateCommission,
+      calculateNetIncome,
+      getCommissionRateByPlatform,
+      openCommissionModal,
+      closeCommissionModal,
+      saveCommissionRate,
+      deleteCommissionRate,
+      toggleCommissionStatus,
+      autoCalculateCommission,
+      applyAutoCommission
     };
   }
 }).mount('#app');
